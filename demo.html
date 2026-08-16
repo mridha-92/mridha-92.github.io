@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Cyber_pent Motor Cortex — live interactive demo. Real-time VAPT triage, active defense, alert stream and AI security copilot." />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <title>Cyber_pent Motor Cortex — Live Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="mridha_style.css">
+  <style>
+    :root {
+      --green: #4ade80;
+      --amber: #fbbf24;
+      --red: #f87171;
+    }
+    #progress-bar { display: none; }
+    body { background: #05050a; }
+
+    /* ---------- Demo bar ---------- */
+    .demo-bar {
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 24px;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .demo-bar .brand { font-size: 16px; }
+    .demo-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--green);
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(74,222,128,0.08);
+      border: 1px solid rgba(74,222,128,0.3);
+    }
+    .pulse-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--green);
+      animation: blink 1.4s ease-in-out infinite;
+    }
+    .demo-nav a { color: var(--muted); font-size: 13px; margin-left: 18px; font-weight: 500; }
+    .demo-nav a:hover, .demo-nav a.active { color: var(--accent); text-decoration: none; }
+
+    /* ---------- Hero ---------- */
+    #demo-hero {
+      position: relative;
+      text-align: center;
+      padding: 70px 24px 40px;
+      overflow: hidden;
+    }
+    .demo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: var(--accent);
+      border: 1px solid var(--border);
+      background: var(--bg-soft);
+      border-radius: 999px;
+      padding: 7px 16px;
+      margin-bottom: 22px;
+    }
+    .demo-badge .pulse-dot { background: var(--red); }
+    #demo-hero h1 {
+      font-size: 44px;
+      font-weight: 800;
+      margin-bottom: 14px;
+      background: linear-gradient(90deg, #fff, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    #demo-hero p { color: var(--muted); font-size: 16px; max-width: 680px; margin: 0 auto 28px; }
+    .demo-actions { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+    /* ---------- Stats ---------- */
+    .demo-stats {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      max-width: 1100px;
+      margin: 0 auto 10px;
+      padding: 0 24px;
+    }
+    .demo-stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 16px;
+      text-align: center;
+    }
+    .demo-stat strong { display: block; font-size: 26px; font-family: var(--mono); color: var(--accent); }
+    .demo-stat span { font-size: 12px; color: var(--muted); }
+    .demo-stat .stat-ok { color: var(--green); }
+    .demo-stat .stat-warn { color: var(--amber); }
+
+    /* ---------- Layout ---------- */
+    .demo-main { max-width: 1100px; margin: 0 auto; padding: 30px 24px 60px; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-soft);
+    }
+    .panel-head h3 { font-size: 14px; font-family: var(--mono); display: flex; align-items: center; gap: 8px; }
+    .panel-head .live-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); animation: blink 1.5s ease-in-out infinite; }
+    .panel-head .muted { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+
+    /* ---------- Pipeline ---------- */
+    .pipeline { display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding: 20px; }
+    .pnode {
+      flex: 0 0 150px;
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    .pnode .icon { font-size: 20px; margin-bottom: 6px; }
+    .pnode .title { font-size: 12px; font-weight: 700; }
+    .pnode .count { font-family: var(--mono); font-size: 15px; color: var(--accent); margin-top: 4px; }
+    .pnode.flash {
+      border-color: var(--accent);
+      box-shadow: 0 0 22px rgba(0,229,255,0.3);
+      transform: translateY(-2px);
+    }
+    .connector { flex: 0 0 26px; display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 16px; }
+
+    /* ---------- Feed ---------- */
+    .feed-list { max-height: 420px; overflow-y: auto; }
+    .feed-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      animation: feed-in 0.3s ease-out;
+    }
+    @keyframes feed-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .sev { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .sev.critical { background: var(--red); box-shadow: 0 0 8px var(--red); }
+    .sev.high { background: var(--amber); }
+    .sev.medium { background: #facc15; }
+    .sev.low { background: var(--green); }
+    .f-type { font-family: var(--mono); font-weight: 600; font-size: 11px; min-width: 120px; }
+    .f-target { color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+    .f-time { color: var(--muted); font-family: var(--mono); font-size: 11px; flex-shrink: 0; }
+    .f-status { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; flex-shrink: 0; }
+    .f-status.blocked { background: rgba(248,113,113,0.15); color: var(--red); }
+    .f-status.notified { background: rgba(251,191,36,0.15); color: var(--amber); }
+    .f-status.logged { background: rgba(74,222,128,0.15); color: var(--green); }
+
+    /* ---------- Severity cards ---------- */
+    .severity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 18px; }
+    .sev-card { border: 1px solid var(--border); border-radius: 10px; padding: 14px; background: var(--bg-soft); }
+    .sev-card .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .sev-card .label { font-family: var(--mono); font-size: 11px; font-weight: 700; }
+    .sev-card .num { font-family: var(--mono); font-size: 22px; }
+    .sev-card.critical .label, .sev-card.critical .num { color: var(--red); }
+    .sev-card.high .label, .sev-card.high .num { color: var(--amber); }
+    .sev-card.medium .label, .sev-card.medium .num { color: #facc15; }
+    .sev-card.low .label, .sev-card.low .num { color: var(--green); }
+    .sev-card .desc { font-size: 12px; color: var(--muted); }
+
+    /* ---------- AI copilot ---------- */
+    .copilot-body { padding: 18px; }
+    .copilot-log {
+      background: #0a0a12;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      min-height: 200px;
+      max-height: 300px;
+      overflow-y: auto;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .copilot-log .msg { color: var(--accent); }
+    .copilot-log .reply { color: var(--text); white-space: pre-wrap; }
+    .copilot-log .sys { color: var(--muted); }
+    .copilot-input { display: flex; gap: 8px; }
+    .copilot-input input {
+      flex: 1;
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      outline: none;
+    }
+    .copilot-input input:focus { border-color: var(--accent); }
+    .copilot-input button {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 18px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .side-note { font-size: 12px; color: var(--muted); padding: 14px 18px; border-top: 1px solid var(--border); }
+
+    footer { margin-top: 0; }
+
+    @media (max-width: 900px) {
+      .demo-main { grid-template-columns: 1fr; }
+      .demo-stats { grid-template-columns: repeat(2, 1fr); }
+      .severity-grid { grid-template-columns: 1fr; }
+      #demo-hero h1 { font-size: 32px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-bar">
+    <span class="brand">Cyber<span class="accent">Pent</span>._ <span style="color:var(--muted);font-weight:400;">motor cortex · demo</span></span>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div class="demo-nav">
+        <a href="index.html">Home</a>
+        <a href="aegis.html">Showcase</a>
+        <a href="demo.html" class="active">Live Demo</a>
+      </div>
+      <div class="demo-status"><span class="pulse-dot"></span><span id="status-text">Active — Monitoring</span></div>
+    </div>
+  </div>
+
+  <header id="demo-hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="demo-badge"><span class="pulse-dot"></span> SIMULATED LIVE ENVIRONMENT</div>
+    <h1>Cyber_pent Motor Cortex</h1>
+    <p>Interactive demo of the real-time VAPT triage &amp; active-defense pipeline. Every alert is generated in-browser — watch the motor cortex ingest, triage, ticket, block and notify in under 200ms.</p>
+    <div class="demo-actions">
+      <button class="btn btn-primary" id="trigger-btn">Trigger Simulated Attack</button>
+      <a class="btn btn-ghost" href="aegis.html">Platform Details</a>
+    </div>
+  </header>
+
+  <div class="demo-stats">
+    <div class="demo-stat"><strong id="stat-alerts">0</strong><span>Alerts Processed</span></div>
+    <div class="demo-stat"><strong id="stat-blocked">0</strong><span>IPs Blocked</span></div>
+    <div class="demo-stat"><strong id="stat-critical">0</strong><span>Critical Events</span></div>
+    <div class="demo-stat"><strong class="stat-ok">99.9%</strong><span>Pipeline Uptime</span></div>
+    <div class="demo-stat"><strong class="stat-warn">&lt;200ms</strong><span>Avg Response</span></div>
+  </div>
+
+  <main class="demo-main">
+    <div>
+      <div class="panel">
+        <div class="panel-head">
+          <h3><span class="live-dot"></span> Real-Time Triage Flow</h3>
+          <span class="muted">ingest &rarr; triage &rarr; ticket &rarr; defend &rarr; notify</span>
+        </div>
+        <div class="pipeline" id="pipeline">
+          <div class="pnode" id="node-ingest"><div class="icon">&#9889;</div><div class="title">Ingestion</div><div class="count" id="c-ingest">0</div></div>
+          <div class="connector">&#8594;</div>
+          <div class="pnode" id="node-triage"><div class="icon">&#9878;</div><div class="title">Triage Engine</div><div class="count" id="c-triage">0</div></div>
+          <div class="connector">&#8594;</div>
+          <div class="pnode" id="node-ticket"><div class="icon">&#9998;</div><div class="title">Incident Ticket</div><div class="count" id="c-ticket">0</div></div>
+          <div class="connector">&#8594;</div>
+          <div class="pnode" id="node-defend"><div class="icon">&#128274;</div><div class="title">Active Defense</div><div class="count" id="c-defend">0</div></div>
+          <div class="connector">&#8594;</div>
+          <div class="pnode" id="node-notify"><div class="icon">&#128172;</div><div class="title">Alert Notify</div><div class="count" id="c-notify">0</div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h3><span class="live-dot"></span> Alert Stream</h3>
+          <span class="muted" id="feed-count">0 alerts</span>
+        </div>
+        <div class="feed-list" id="feed-list"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel">
+        <div class="panel-head"><h3>Severity Routing</h3></div>
+        <div class="severity-grid">
+          <div class="sev-card critical"><div class="top"><span class="label">CRITICAL</span><span class="num" id="n-critical">0</span></div><div class="desc">Ticket + edge block + instant alert</div></div>
+          <div class="sev-card high"><div class="top"><span class="label">HIGH</span><span class="num" id="n-high">0</span></div><div class="desc">Security team notification</div></div>
+          <div class="sev-card medium"><div class="top"><span class="label">MEDIUM</span><span class="num" id="n-medium">0</span></div><div class="desc">Team notification + queue</div></div>
+          <div class="sev-card low"><div class="top"><span class="label">LOW</span><span class="num" id="n-low">0</span></div><div class="desc">Silent audit logging</div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h3>AI Security Copilot</h3><span class="muted">gemini · simulated</span></div>
+        <div class="copilot-body">
+          <div class="copilot-log" id="copilot-log"></div>
+          <div class="copilot-input">
+            <input type="text" id="copilot-ask" placeholder="Ask the copilot… e.g. 'analyze the latest critical'" />
+            <button id="copilot-btn">Ask</button>
+          </div>
+        </div>
+        <div class="side-note">Type a question or use a quick prompt: <em>"summarize the feed"</em>, <em>"recommend remediation"</em>, <em>"score overall risk"</em>.</div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Soumen Mridha · Built with <span class="accent">CyberPent</span> · <a href="https://github.com/mridha-92/cyber-pent-motor-cortex" target="_blank" rel="noopener">Source</a></p>
+  </footer>
+
+  <script>
+    const POLL = 2500;
+    const stats = { alerts: 0, blocked: 0, critical: 0, high: 0, medium: 0, low: 0 };
+    const counters = { ingest: 0, triage: 0, ticket: 0, defend: 0, notify: 0 };
+    const feed = [];
+    const MAX_FEED = 40;
+
+    const TYPES = {
+      'SQL_INJECTION': ['CRITICAL', 'HIGH'],
+      'SSRF': ['CRITICAL', 'HIGH'],
+      'COMMAND_INJECTION': ['CRITICAL'],
+      'XSS': ['HIGH', 'MEDIUM'],
+      'PATH_TRAVERSAL': ['HIGH', 'MEDIUM'],
+      'LDAP_INJECTION': ['HIGH']
+    };
+    const ENDPOINTS = ['/api/users', '/search', '/login', '/admin/query', '/api/files', '/api/fetch', '/proxy', '/comment'];
+
+    const ip = () => `${Math.floor(Math.random()*223)+1}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*254)+1}`;
+    const setVal = (id, v) => { const el = document.getElementById(id); el.textContent = v.toLocaleString(); };
+
+    function generateAlert() {
+      const keys = Object.keys(TYPES);
+      const type = keys[Math.floor(Math.random()*keys.length)];
+      const sevPool = TYPES[type];
+      const severity = sevPool[Math.floor(Math.random()*sevPool.length)];
+      return {
+        type, severity,
+        target: `https://${ip()}${ENDPOINTS[Math.floor(Math.random()*ENDPOINTS.length)]}`,
+        attacker: ip(),
+        time: new Date()
+      };
+    }
+
+    function updateStats(alert) {
+      stats.alerts++;
+      stats[alert.severity.toLowerCase()]++;
+      if (alert.severity === 'CRITICAL') stats.blocked++;
+      counters.ingest++; counters.triage++; counters.notify++;
+      if (alert.severity === 'CRITICAL') { counters.ticket++; counters.defend++; }
+
+      setVal('stat-alerts', stats.alerts);
+      setVal('stat-blocked', stats.blocked);
+      setVal('stat-critical', stats.critical);
+      setVal('c-ingest', counters.ingest);
+      setVal('c-triage', counters.triage);
+      setVal('c-ticket', counters.ticket);
+      setVal('c-defend', counters.defend);
+      setVal('c-notify', counters.notify);
+      setVal('n-critical', stats.critical);
+      setVal('n-high', stats.high);
+      setVal('n-medium', stats.medium);
+      setVal('n-low', stats.low);
+    }
+
+    function addFeedItem(alert) {
+      const action = alert.severity === 'CRITICAL'
+        ? { cls: 'blocked', label: 'BLOCKED' }
+        : alert.severity === 'LOW'
+          ? { cls: 'logged', label: 'LOGGED' }
+          : { cls: 'notified', label: 'NOTIFIED' };
+      const item = document.createElement('div');
+      item.className = 'feed-item';
+      item.innerHTML = `
+        <span class="sev ${alert.severity.toLowerCase()}"></span>
+        <span class="f-type">${alert.type}</span>
+        <span class="f-target">${alert.target} · src ${alert.attacker}</span>
+        <span class="f-time">${alert.time.toLocaleTimeString()}</span>
+        <span class="f-status ${action.cls}">${action.label}</span>`;
+      const list = document.getElementById('feed-list');
+      list.insertBefore(item, list.firstChild);
+      feed.unshift(alert);
+      if (feed.length > MAX_FEED) { list.removeChild(list.lastChild); feed.pop(); }
+      document.getElementById('feed-count').textContent = `${feed.length} alerts`;
+    }
+
+    function flash(id) {
+      const el = document.getElementById(id);
+      el.classList.add('flash');
+      setTimeout(() => el.classList.remove('flash'), 450);
+    }
+
+    function processAlert() {
+      const alert = generateAlert();
+      updateStats(alert);
+      addFeedItem(alert);
+      flash('node-ingest');
+      setTimeout(() => flash('node-triage'), 90);
+      if (alert.severity === 'CRITICAL') {
+        setTimeout(() => flash('node-ticket'), 180);
+        setTimeout(() => flash('node-defend'), 260);
+      }
+      setTimeout(() => flash('node-notify'), 330);
+    }
+
+    // ---------- AI copilot (simulated) ----------
+    const copilotLog = document.getElementById('copilot-log');
+    function copilotSay(role, text) {
+      const d = document.createElement('div');
+      if (role === 'sys') d.className = 'sys';
+      else if (role === 'msg') d.className = 'msg';
+      else d.className = 'reply';
+      d.textContent = text;
+      copilotLog.appendChild(d);
+      copilotLog.scrollTop = copilotLog.scrollHeight;
+    }
+
+    function copilotReply(question) {
+      const q = question.toLowerCase();
+      let reply;
+      if (q.includes('summar') || q.includes('feed')) {
+        reply = `SUMMARY — Feed scan: ${stats.alerts} alerts, ${stats.blocked} blocked IPs.\nCritical ${stats.critical} · High ${stats.high} · Medium ${stats.medium} · Low ${stats.low}.\nDominant pattern: server-side injection chains (SQL/SSRF/command) targeting API endpoints. Recommend tightening WAF rules on /api/fetch and /proxy.`;
+      } else if (q.includes('remediation') || q.includes('fix')) {
+        reply = `REMEDIATION PLAN —\n1. Input validation on all /api/* handlers (allowlist schemas).\n2. Parameterized queries for all SQL paths.\n3. Rate-limit auth & query endpoints.\n4. Block repeat offender IPs at the edge (${stats.blocked} already auto-blocked).\n5. Re-scan after patching to confirm closure.`;
+      } else if (q.includes('risk') || q.includes('score')) {
+        const score = Math.min(9.5, (stats.critical * 0.35 + stats.high * 0.2).toFixed(1) || 4.2);
+        const level = score >= 7 ? 'HIGH' : score >= 4 ? 'MEDIUM' : 'LOW';
+        reply = `TRURISK SCORE — ${score}/10 (${level}).\nCritical events dominate current exposure. TruRisk = CVSS × RTI multiplier × asset criticality. Immediate containment recommended for ${stats.blocked} active blocklist entries.`;
+      } else if (q.includes('latest') || q.includes('critical')) {
+        const crits = feed.filter(f => f.severity === 'CRITICAL');
+        const sample = crits[0] || feed[0] || null;
+        reply = sample
+          ? `LATEST CRITICAL — ${sample.type} @ ${sample.target}\nSeverity CRITICAL. Auto-action: incident ticket created, attacker ${sample.attacker} blocked at edge, team notified. Response window <200ms.`
+          : `No critical events in the current window. Feed is clean — monitoring continues.`;
+      } else {
+        reply = `ANALYSIS — I've correlated the live feed against MITRE ATT&CK.\nActive patterns: injection (T1190) + drive-by compromise vectors.\nSuggested next step: dispatch adversary simulation campaign to validate detection coverage. (Simulated response — production copilot uses Google Gemini.)`;
+      }
+      copilotSay('reply', `▸ ${reply}`);
+    }
+
+    document.getElementById('trigger-btn').addEventListener('click', () => {
+      processAlert();
+      setTimeout(processAlert, 120);
+    });
+
+    const ask = document.getElementById('copilot-ask');
+    function sendAsk() {
+      const q = ask.value.trim();
+      if (!q) return;
+      copilotSay('msg', `YOU: ${q}`);
+      ask.value = '';
+      setTimeout(() => copilotReply(q), 500);
+    }
+    document.getElementById('copilot-btn').addEventListener('click', sendAsk);
+    ask.addEventListener('keydown', e => { if (e.key === 'Enter') sendAsk(); });
+
+    // Init
+    copilotSay('sys', '◆ Cyber_pent Motor Cortex copilot online. Ask me anything about the live feed.');
+    for (let i = 0; i < 4; i++) setTimeout(processAlert, i * 180);
+    setInterval(processAlert, POLL);
+  </script>
+</body>
+</html>
