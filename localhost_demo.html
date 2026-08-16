@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Cyber_pent Motor Cortex — faithful recreation of the localhost platform build. Live 5G autonomous pentest dashboard with topology, attack chains, findings, AI engines and SIM/LIVE mode." />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <title>Cyber_pent Motor Cortex — Platform (localhost build)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="mridha_style.css">
+  <style>
+    :root {
+      --blue: #3b82f6; --green: #22c55e; --purple: #a855f7;
+      --red: #ef4444; --amber: #f59e0b;
+      --frost: #cbd5e1; --steel: #64748b;
+      --deep: #0b1020; --panel: #0e1526; --panel-2: #111a2e;
+      --blue-glow: rgba(59,130,246,0.45);
+      --app-line: #1d2942; --app-text: #e2e8f0;
+    }
+    #progress-bar { display: none; }
+    body { background: #05050a; overflow-x: hidden; }
+    .mono { font-family: var(--mono); }
+    .steel { color: var(--steel); }
+    .frost { color: var(--frost); }
+    .ellipsis { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .spin { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .pulse-dot { animation: blink 1.3s ease-in-out infinite; }
+    @keyframes blink { 0%,100% { opacity: 1 } 50% { opacity: 0.25 } }
+
+    .demo-bar { position: sticky; top: 0; z-index: 60; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 24px; background: rgba(10,10,15,0.88); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .demo-bar .brand { font-size: 16px; }
+    .demo-status { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; color: var(--green); padding: 6px 14px; border-radius: 999px; background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.3); }
+    .demo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: blink 1.4s ease-in-out infinite; }
+    .demo-nav a { color: var(--muted); font-size: 13px; margin-left: 18px; font-weight: 500; }
+    .demo-nav a:hover, .demo-nav a.active { color: var(--accent); text-decoration: none; }
+
+    /* ---------- TopBar ---------- */
+    .topbar { display: flex; align-items: center; gap: 14px; padding: 10px 14px; background: var(--panel); border: 1px solid var(--app-line); border-radius: 10px; margin: 14px 14px 0; position: relative; }
+    .logo { display: flex; align-items: center; gap: 9px; background: none; border: none; cursor: pointer; padding: 0; color: var(--app-text); }
+    .logo-text { text-align: left; line-height: 1.05; }
+    .logo-name { display: block; font-weight: 800; font-size: 14px; letter-spacing: 2px; }
+    .logo-sub { display: block; font-family: var(--mono); font-size: 9px; color: var(--blue); letter-spacing: 3px; }
+    .campaign-selector { position: relative; }
+    .campaign-trigger { display: flex; align-items: center; gap: 8px; background: var(--panel-2); color: var(--app-text); border: 1px solid var(--app-line); border-radius: 8px; padding: 7px 12px; cursor: pointer; font-size: 13px; max-width: 270px; }
+    .campaign-trigger .campaign-name { max-width: 205px; }
+    .campaign-dropdown { position: absolute; top: calc(100% + 6px); left: 0; width: 300px; background: var(--panel-2); border: 1px solid var(--app-line); border-radius: 10px; z-index: 80; box-shadow: 0 18px 50px rgba(0,0,0,0.6); }
+    .campaign-search { display: flex; align-items: center; gap: 8px; padding: 10px; border-bottom: 1px solid var(--app-line); }
+    .campaign-search input { flex: 1; background: none; border: none; outline: none; color: var(--app-text); font-family: var(--mono); font-size: 12px; }
+    .campaign-list { max-height: 260px; overflow-y: auto; padding: 6px; }
+    .campaign-item { display: flex; align-items: center; gap: 8px; width: 100%; background: none; border: none; color: var(--app-text); padding: 8px 9px; border-radius: 7px; cursor: pointer; font-size: 13px; text-align: left; }
+    .campaign-item:hover, .campaign-item.active { background: var(--panel); }
+    .campaign-item-name { flex: 1; }
+    .campaign-item-meta { font-size: 10px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; }
+    .dot-blue { background: var(--blue); } .dot-green { background: var(--green); } .dot-amber { background: var(--amber); } .dot-red { background: var(--red); } .dot-grey { background: var(--steel); } .dot-purple { background: var(--purple); }
+    .engine-trio { display: flex; gap: 10px; flex: 1; justify-content: center; }
+    .engine-chip { display: flex; align-items: center; gap: 7px; background: var(--panel-2); border: 1px solid var(--app-line); color: var(--app-text); border-radius: 8px; padding: 7px 12px; cursor: pointer; font-size: 12px; }
+    .engine-chip-name { font-family: var(--mono); font-weight: 700; font-size: 11px; }
+    .engine-bar { width: 70px; height: 5px; background: var(--deep); border-radius: 3px; overflow: hidden; }
+    .engine-bar-fill { display: block; height: 100%; border-radius: 3px; }
+    .fill-blue { background: var(--blue); } .fill-amber { background: var(--amber); } .fill-red { background: var(--red); }
+    .engine-chip-pct { font-size: 11px; }
+    .topbar-right { display: flex; align-items: center; gap: 6px; }
+    .icon-btn { position: relative; background: none; border: none; color: var(--frost); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 7px; font-size: 16px; }
+    .icon-btn:hover { background: var(--panel-2); color: var(--app-text); }
+    .icon-btn.tiny { width: 24px; height: 24px; }
+    .badge { position: absolute; top: -3px; right: -3px; background: var(--red); color: #fff; font-size: 9px; font-family: var(--mono); font-weight: 700; border-radius: 999px; padding: 1px 5px; }
+    .notif-panel { position: absolute; right: 14px; top: calc(100% + 6px); width: 360px; background: var(--panel-2); border: 1px solid var(--app-line); border-radius: 10px; z-index: 80; box-shadow: 0 18px 50px rgba(0,0,0,0.6); padding: 8px; }
+    .notif-panel .n-title { font-size: 11px; font-family: var(--mono); letter-spacing: 1px; color: var(--steel); padding: 6px 8px; }
+    .notif-item { display: flex; gap: 8px; padding: 8px; border-radius: 7px; font-size: 12px; }
+    .notif-item:hover { background: var(--panel); }
+    .notif-item .n-text { flex: 1; color: var(--app-text); }
+    .notif-item .n-meta { font-size: 10px; }
+
+    /* ---------- app body ---------- */
+    .app-body { display: grid; grid-template-columns: 250px 1fr 320px; gap: 0; max-width: 1720px; margin: 12px auto 0; padding: 0 14px; }
+
+    /* Sidebar */
+    .sidebar { display: flex; flex-direction: column; border-right: 1px solid var(--app-line); background: var(--panel); border-radius: 10px 0 0 0; }
+    .side-header { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--app-line); }
+    .side-title { font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px; color: var(--steel); }
+    .side-zone { padding: 14px; border-bottom: 1px solid var(--app-line); }
+    .zone-label { font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px; color: var(--steel); }
+    .summary-row { display: flex; gap: 12px; align-items: center; }
+    .ring-pct { fill: var(--app-text); font-size: 16px; font-weight: 700; }
+    .summary-meta { min-width: 0; }
+    .campaign-title { font-weight: 600; font-size: 13px; color: var(--app-text); }
+    .campaign-desc { font-size: 11px; color: var(--muted); margin: 3px 0 8px; line-height: 1.4; }
+    .tag { font-size: 9px; font-family: var(--mono); letter-spacing: 1px; color: var(--accent); border: 1px solid var(--app-line); padding: 2px 6px; border-radius: 4px; margin-right: 6px; }
+    .campaign-stats { font-size: 11px; margin-top: 6px; }
+    .summary-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 12px; padding: 7px 12px; border-radius: 7px; cursor: pointer; border: 1px solid var(--app-line); background: var(--panel-2); color: var(--app-text); }
+    .btn:hover { border-color: var(--blue); }
+    .btn-primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .btn-primary:hover { background: #2f6fe0; }
+    .btn-danger { border-color: var(--red); color: var(--red); }
+    .btn-danger:hover { background: rgba(239,68,68,0.1); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .zone-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .zone-action { background: none; border: none; color: var(--accent); font-size: 11px; cursor: pointer; }
+    .test-tree { display: flex; flex-direction: column; gap: 10px; }
+    .tree-group-head { display: flex; align-items: center; gap: 6px; width: 100%; background: none; border: none; color: var(--app-text); cursor: pointer; font-size: 12px; padding: 2px 0; text-align: left; }
+    .tree-group-head .mono { margin-left: auto; font-size: 10px; }
+    .tree-items { display: flex; flex-direction: column; margin-top: 6px; }
+    .tree-item { display: flex; align-items: center; gap: 7px; width: 100%; background: none; border: none; color: var(--frost); font-size: 12px; padding: 5px 4px 5px 14px; cursor: pointer; text-align: left; border-radius: 5px; }
+    .tree-item:hover { background: var(--panel-2); }
+    .tree-item-name { flex: 1; }
+    .tree-dur { font-size: 10px; }
+    .tree-empty { font-size: 11px; padding: 4px 4px 4px 14px; }
+    .filter-body { display: flex; flex-direction: column; gap: 10px; }
+    .filter-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .sev-pill { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; padding: 4px 9px; border-radius: 999px; border: 1px solid var(--app-line); background: none; color: var(--steel); cursor: pointer; }
+    .sev-pill.sev-on.critical { background: rgba(239,68,68,0.15); color: var(--red); border-color: var(--red); }
+    .sev-pill.sev-on.high { background: rgba(245,158,11,0.15); color: var(--amber); border-color: var(--amber); }
+    .sev-pill.sev-on.medium { background: rgba(203,213,225,0.12); color: var(--frost); border-color: var(--frost); }
+    .sev-pill.sev-on.low { background: rgba(100,116,139,0.2); color: var(--steel); border-color: var(--steel); }
+    .sev-pill.sev-on.info { background: rgba(59,130,246,0.15); color: var(--blue); border-color: var(--blue); }
+    .engine-check { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; color: var(--frost); cursor: pointer; }
+    .engine-check input { accent-color: var(--blue); }
+    .side-zone-tests { flex: 1; overflow-y: auto; }
+
+    /* Main */
+    .main { display: flex; flex-direction: column; background: var(--deep); border-left: 1px solid var(--app-line); border-right: 1px solid var(--app-line); min-height: 700px; }
+    .nav-strip { display: flex; align-items: center; gap: 2px; padding: 8px 10px; border-bottom: 1px solid var(--app-line); background: var(--panel); flex-wrap: wrap; }
+    .nav-tab { display: inline-flex; align-items: center; gap: 6px; background: none; border: none; color: var(--steel); font-size: 12px; padding: 7px 11px; border-radius: 7px; cursor: pointer; }
+    .nav-tab:hover { color: var(--app-text); background: var(--panel-2); }
+    .nav-tab.active { color: var(--blue); background: rgba(59,130,246,0.1); }
+    .mode-toggle { margin-left: auto; display: flex; align-items: center; gap: 2px; border: 1px solid var(--app-line); border-radius: 7px; padding: 2px; }
+    .mode-toggle button { font-family: var(--mono); font-size: 10px; letter-spacing: 1px; background: none; border: none; color: var(--steel); padding: 4px 10px; border-radius: 5px; cursor: pointer; }
+    .mode-toggle button.active { background: var(--panel-2); color: var(--app-text); }
+    .mode-toggle .dot { margin-left: 5px; }
+    .workspace { flex: 1; display: flex; flex-direction: column; }
+    .topology-wrap { position: relative; flex: 1; min-height: 420px; }
+    #topo-svg { width: 100%; height: 100%; min-height: 420px; display: block; }
+    .topo-title { position: absolute; top: 10px; left: 14px; font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px; color: var(--steel); z-index: 2; }
+    .topo-hint { position: absolute; top: 10px; right: 14px; font-family: var(--mono); font-size: 10px; color: var(--steel); z-index: 2; }
+    .topo-node .n-label { fill: var(--app-text); font-weight: 600; font-family: var(--mono); font-size: 10px; }
+    .topo-node .n-sub { font-size: 8px; fill: var(--steel); font-family: var(--mono); }
+    .edge-attack { stroke: var(--red); stroke-dasharray: 5 4; animation: dashmove 0.9s linear infinite; }
+    .edge-exfil { stroke: var(--amber); stroke-dasharray: 3 4; animation: dashmove 0.7s linear infinite; }
+    .edge-radio { stroke: var(--blue); opacity: 0.7; }
+    .edge-nas { stroke: var(--blue); stroke-width: 1.4; opacity: 0.85; }
+    .edge-sbi { stroke: var(--steel); opacity: 0.7; }
+    .edge-done { stroke: var(--green); opacity: 0.9; }
+    @keyframes dashmove { to { stroke-dashoffset: -18; } }
+    .glow-c { filter: drop-shadow(0 0 6px var(--red)); }
+    .glow-blue { filter: drop-shadow(0 0 5px var(--blue-glow)); }
+
+    .timeline { border-top: 1px solid var(--app-line); background: var(--panel); }
+    .timeline-handle { display: flex; align-items: center; gap: 8px; width: 100%; background: none; border: none; color: var(--app-text); padding: 10px 14px; cursor: pointer; font-size: 12px; }
+    .timeline-handle .mono { margin-left: auto; font-size: 10px; }
+    .timeline-body { padding: 6px 14px 14px; }
+    .timeline-lanes { display: flex; flex-direction: column; gap: 6px; }
+    .timeline-lane { display: flex; align-items: center; gap: 10px; }
+    .lane-label { width: 176px; flex: 0 0 auto; font-family: var(--mono); font-size: 9px; letter-spacing: 1px; color: var(--steel); }
+    .lane-track { display: flex; align-items: center; gap: 8px; flex: 1; min-height: 46px; border-left: 1px solid var(--app-line); padding-left: 12px; overflow-x: auto; }
+    .lane-empty { font-size: 10px; }
+    .chain-arrow { color: var(--steel); font-size: 10px; }
+    .chain-node { border: 1px solid var(--app-line); border-radius: 8px; padding: 6px 10px; background: var(--panel-2); min-width: 150px; }
+    .chain-node.running { border-color: var(--blue); box-shadow: 0 0 10px var(--blue-glow); }
+    .chain-node.success { border-color: var(--green); }
+    .chain-node.blocked { border-color: var(--red); box-shadow: 0 0 10px rgba(239,68,68,0.3); }
+    .chain-node.partial { border-color: var(--amber); }
+    .chain-node.queued { opacity: 0.55; }
+    .chain-node-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .chain-name { font-size: 11px; color: var(--app-text); max-width: 150px; font-family: var(--mono); }
+    .pill { font-family: var(--mono); font-size: 9px; letter-spacing: 0.5px; padding: 2px 7px; border-radius: 999px; border: 1px solid var(--app-line); white-space: nowrap; }
+    .pill-green { color: var(--green); border-color: var(--green); }
+    .pill-critical { color: var(--red); border-color: var(--red); }
+    .pill-info { color: var(--blue); border-color: var(--blue); }
+    .pill-high { color: var(--amber); border-color: var(--amber); }
+    .pill-grey { color: var(--steel); }
+    .chain-node-meta { display: flex; gap: 8px; align-items: center; margin-top: 4px; font-size: 9px; }
+    .timeline-legend { display: flex; gap: 14px; align-items: center; margin-top: 10px; font-size: 10px; color: var(--steel); flex-wrap: wrap; }
+    .legend-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+
+    /* grid views */
+    .grid-view { padding: 18px; }
+    .grid-view-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .grid-view-title { font-family: var(--mono); font-size: 12px; letter-spacing: 1.5px; color: var(--app-text); }
+    .grid-view-head .mono { margin-left: auto; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+    .card { background: var(--panel-2); border: 1px solid var(--app-line); border-radius: 10px; padding: 16px; }
+    .campaign-card-head { display: flex; align-items: center; gap: 8px; }
+    .campaign-card-name { font-weight: 600; font-size: 13px; flex: 1; }
+    .campaign-card-desc { font-size: 12px; color: var(--muted); margin: 8px 0; line-height: 1.5; }
+    .campaign-card-target { font-family: var(--mono); font-size: 11px; color: var(--frost); background: var(--panel); border: 1px solid var(--app-line); border-radius: 6px; padding: 6px 9px; }
+    .campaign-card-progress { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+    .meter { flex: 1; height: 6px; background: var(--panel); border-radius: 3px; overflow: hidden; }
+    .fill-blue { background: var(--blue); }
+    .campaign-card-actions { display: flex; gap: 8px; margin-top: 6px; }
+    .report-card-grade { font-family: var(--mono); font-size: 34px; font-weight: 700; }
+    .report-card-name { font-weight: 600; font-size: 14px; margin-top: 4px; }
+    .plugin-head { display: flex; align-items: center; gap: 8px; }
+    .plugin-head .mono { flex: 1; }
+    .settings-list { display: flex; flex-direction: column; }
+    .setting-row { display: flex; align-items: center; justify-content: space-between; padding: 13px 4px; border-bottom: 1px solid var(--app-line); font-size: 13px; color: var(--app-text); gap: 10px; }
+    .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; inset: 0; background: var(--panel-3, var(--panel)); border: 1px solid var(--app-line); border-radius: 999px; cursor: pointer; }
+    .slider::before { content: ""; position: absolute; width: 16px; height: 16px; border-radius: 50%; background: var(--steel); top: 2px; left: 2px; }
+    .switch input:checked + .slider::before { background: var(--blue); transform: translateX(18px); }
+    .findings-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .findings-table th { text-align: left; font-family: var(--mono); font-size: 10px; letter-spacing: 1px; color: var(--steel); padding: 10px; border-bottom: 1px solid var(--app-line); }
+    .findings-table td { padding: 10px; border-bottom: 1px solid rgba(29,41,66,0.5); color: var(--frost); }
+    .findings-table tr:hover td { background: var(--panel-2); }
+
+    /* revolution module views */
+    .module { padding: 18px; }
+    .module h2 { font-size: 16px; margin-bottom: 4px; }
+    .module .m-sub { font-family: var(--mono); font-size: 11px; color: var(--steel); margin-bottom: 16px; }
+    .m-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin-bottom: 18px; }
+    .m-card { background: var(--panel-2); border: 1px solid var(--app-line); border-radius: 8px; padding: 12px; }
+    .m-card .k { font-family: var(--mono); font-size: 9px; letter-spacing: 1px; color: var(--steel); }
+    .m-card .v { font-size: 15px; font-weight: 700; color: var(--app-text); margin-top: 4px; }
+    .m-card .d { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .m-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .m-table th { text-align: left; font-family: var(--mono); font-size: 10px; letter-spacing: 1px; color: var(--steel); padding: 8px 10px; border-bottom: 1px solid var(--app-line); }
+    .m-table td { padding: 8px 10px; border-bottom: 1px solid rgba(29,41,66,0.5); color: var(--frost); }
+    .phase-strip { display: flex; gap: 6px; align-items: center; font-family: var(--mono); font-size: 11px; flex-wrap: wrap; margin-bottom: 14px; }
+    .phase-chip { padding: 5px 12px; border-radius: 999px; border: 1px solid var(--app-line); color: var(--steel); }
+    .phase-chip.on { color: var(--app-text); border-color: var(--blue); background: rgba(59,130,246,0.12); box-shadow: 0 0 10px rgba(59,130,246,0.25); }
+
+    /* Findings feed */
+    .feed { display: flex; flex-direction: column; background: var(--panel); border-radius: 0 10px 0 0; }
+    .feed-head { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--app-line); }
+    .feed-title { font-family: var(--mono); font-size: 11px; letter-spacing: 1.5px; color: var(--app-text); }
+    .feed-total { font-size: 12px; }
+    .feed-actions { margin-left: auto; display: flex; gap: 2px; }
+    .feed-search { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--app-line); }
+    .feed-search input { flex: 1; background: none; border: none; outline: none; color: var(--app-text); font-family: var(--mono); font-size: 12px; }
+    .feed-summary { display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--app-line); font-size: 10px; }
+    .sev-count.critical { color: var(--red); } .sev-count.high { color: var(--amber); } .sev-count.medium { color: var(--frost); } .sev-count.low { color: var(--steel); } .sev-count.info { color: var(--blue); }
+    .feed-list { flex: 1; overflow-y: auto; max-height: 540px; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+    .finding-card { border: 1px solid var(--app-line); border-left-width: 3px; border-radius: 8px; padding: 10px; background: var(--panel-2); }
+    .finding-card.sev-critical { border-left-color: var(--red); } .finding-card.sev-high { border-left-color: var(--amber); }
+    .finding-card.sev-medium { border-left-color: var(--frost); } .finding-card.sev-low { border-left-color: var(--steel); } .finding-card.sev-info { border-left-color: var(--blue); }
+    .finding-card.acked { opacity: 0.55; }
+    .finding-top { display: flex; gap: 8px; align-items: center; font-size: 9px; }
+    .finding-sev { font-weight: 700; }
+    .finding-card.sev-critical .finding-sev { color: var(--red); } .finding-card.sev-high .finding-sev { color: var(--amber); }
+    .finding-card.sev-medium .finding-sev { color: var(--frost); } .finding-card.sev-info .finding-sev { color: var(--blue); }
+    .finding-cvss { font-size: 10px; font-weight: 700; color: var(--app-text); }
+    .finding-engine { margin-left: auto; }
+    .finding-engine.air { color: var(--blue); } .finding-engine.core { color: var(--green); } .finding-engine.ml { color: var(--purple); }
+    .finding-title { font-size: 12.5px; font-weight: 600; color: var(--app-text); margin-top: 6px; }
+    .finding-detail { font-size: 10.5px; color: var(--muted); margin-top: 3px; line-height: 1.45; }
+    .finding-target { display: flex; gap: 8px; align-items: center; margin-top: 7px; font-size: 10.5px; }
+    .finding-actions { display: flex; gap: 12px; margin-top: 8px; }
+    .link-btn { display: inline-flex; align-items: center; gap: 4px; background: none; border: none; color: var(--accent); font-size: 11px; cursor: pointer; padding: 0; }
+    .link-btn:hover { text-decoration: underline; }
+    .link-btn.danger { color: var(--red); }
+    .feed-empty { text-align: center; padding: 40px 10px; color: var(--steel); font-size: 12px; }
+    .feed-empty-check { font-size: 26px; color: var(--green); margin-bottom: 6px; }
+
+    /* Status bar */
+    .statusbar { display: flex; align-items: center; gap: 14px; padding: 7px 14px; background: var(--panel); border: 1px solid var(--app-line); border-radius: 10px; margin: 12px 14px 14px; font-size: 11px; color: var(--steel); flex-wrap: wrap; }
+    .statusbar.emergency { border-color: var(--red); background: rgba(239,68,68,0.06); }
+    .sb-left { display: flex; gap: 10px; align-items: center; min-width: 0; }
+    .sb-campaign { color: var(--app-text); max-width: 260px; }
+    .sb-sep { opacity: 0.5; }
+    .sb-right { margin-left: auto; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+
+    /* modals */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(4,6,12,0.75); backdrop-filter: blur(4px); z-index: 90; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--panel); border: 1px solid var(--app-line); border-radius: 12px; width: 560px; max-width: 100%; max-height: 84vh; overflow-y: auto; box-shadow: 0 24px 70px rgba(0,0,0,0.7); }
+    .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--app-line); position: sticky; top: 0; background: var(--panel); }
+    .modal-head h3 { font-size: 15px; }
+    .modal-body { padding: 18px; }
+    .modal-foot { padding: 14px 18px; border-top: 1px solid var(--app-line); display: flex; justify-content: flex-end; gap: 10px; }
+    .kpi-row { display: flex; gap: 14px; flex-wrap: wrap; }
+    .kpi { text-align: center; padding: 10px 16px; background: var(--panel-2); border: 1px solid var(--app-line); border-radius: 8px; }
+    .kpi-val { font-size: 22px; font-weight: 800; }
+    .kpi-label { font-family: var(--mono); font-size: 9px; letter-spacing: 1px; color: var(--steel); }
+    .log-line { font-family: var(--mono); font-size: 11px; padding: 3px 0; border-bottom: 1px solid rgba(29,41,66,0.4); }
+    .log-line .INFO { color: var(--frost); } .log-line .WARN { color: var(--amber); } .log-line .ERROR { color: var(--red); }
+    .form-row { margin-bottom: 14px; }
+    .form-row label { display: block; font-family: var(--mono); font-size: 11px; color: var(--steel); margin-bottom: 6px; }
+    .form-row input, .form-row textarea { width: 100%; background: var(--panel-2); border: 1px solid var(--app-line); color: var(--app-text); border-radius: 7px; padding: 9px 11px; font-size: 13px; outline: none; font-family: var(--mono); }
+    .form-row input:focus { border-color: var(--blue); }
+    .emergency-banner { display: none; text-align: center; padding: 8px; background: var(--red); color: #fff; font-family: var(--mono); font-weight: 700; letter-spacing: 2px; font-size: 13px; animation: blink 1s steps(2) infinite; }
+    .emergency-banner.show { display: block; }
+
+    @media (max-width: 1180px) {
+      .app-body { grid-template-columns: 1fr; }
+      .feed { order: -1; border-radius: 10px; }
+      .feed-list { max-height: 300px; }
+      .sidebar { border-radius: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <div id="progress-bar"></div>
+
+  <nav>
+    <div class="nav-inner">
+      <span class="brand">Cyber<span class="accent">Pent</span>._</span>
+      <div class="nav-links">
+        <a href="index.html">Home</a>
+        <a href="index.html#about">About</a>
+        <a href="index.html#skills">Skills</a>
+        <a href="index.html#projects">Projects</a>
+        <a href="index.html#contact">Contact</a>
+        <a href="aegis.html">CyberPent</a>
+        <a href="demo.html">Demo</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="demo-bar">
+    <span class="brand">Cyber<span class="accent">Pent</span>._<span class="mono steel" style="font-size:11px"> / localhost build</span></span>
+    <span class="demo-status"><span class="demo-dot"></span> SIMULATED LIVE ENVIRONMENT</span>
+    <div class="demo-nav">
+      <a href="aegis.html">Showcase</a>
+      <a href="https://github.com/mridha-92/cyber-pent-motor-cortex" target="_blank" rel="noopener">Source</a>
+    </div>
+  </div>
+
+  <div class="emergency-banner" id="emergency-banner">⛔ EMERGENCY STOP ACTIVE — ALL ENGINES HALTED</div>
+
+  <!-- TopBar -->
+  <div class="topbar">
+    <button class="logo" id="logo-btn" title="Cyber_pent — Motor Cortex">
+      <svg width="26" height="26" viewBox="0 0 26 26" aria-hidden>
+        <path d="M13 1 L23 6 V14 L13 25 L3 14 V6 Z" fill="none" stroke="var(--blue)" stroke-width="1.6" stroke-linejoin="round"/>
+        <circle cx="13" cy="12" r="3.4" fill="var(--blue)" opacity="0.9"><animate attributeName="r" values="3.4;4.2;3.4" dur="2s" repeatCount="indefinite"/></circle>
+        <path d="M7 16.5 L19 16.5" stroke="var(--blue)" stroke-width="1.2" opacity="0.5" stroke-dasharray="2 2"/>
+      </svg>
+      <span class="logo-text">
+        <span class="logo-name">CYBER_PENT</span>
+        <span class="logo-sub">MOTOR CORTEX</span>
+      </span>
+    </button>
+
+    <div class="campaign-selector" id="campaign-selector">
+      <button class="campaign-trigger" id="campaign-trigger">
+        <span class="dot dot-blue pulse-dot" id="campaign-dot"></span>
+        <span class="campaign-name ellipsis" id="campaign-name">—</span>
+        <span class="steel">▾</span>
+      </button>
+      <div class="campaign-dropdown" id="campaign-dropdown" style="display:none">
+        <div class="campaign-search">
+          <span class="steel">⌕</span>
+          <input id="campaign-search" placeholder="Search campaigns…" />
+        </div>
+        <div class="campaign-list" id="campaign-list"></div>
+      </div>
+    </div>
+
+    <div class="engine-trio" id="engine-trio"></div>
+
+    <div class="topbar-right">
+      <button class="icon-btn" id="notif-btn" title="Notifications">🔔<span class="badge" id="notif-badge" style="display:none">0</span></button>
+      <button class="icon-btn" id="settings-btn" title="Settings">⚙</button>
+      <button class="icon-btn" id="emergency-btn" title="Quick actions / emergency stop">⚡</button>
+      <button class="icon-btn" title="User menu">👤</button>
+    </div>
+    <div class="notif-panel" id="notif-panel" style="display:none">
+      <div class="n-title">NOTIFICATIONS</div>
+      <div id="notif-list"></div>
+    </div>
+  </div>
+
+  <!-- App body -->
+  <div class="app-body">
+    <aside class="sidebar">
+      <div class="side-header">
+        <span class="side-title">CAMPAIGN / NAV</span>
+      </div>
+      <div class="side-zone">
+        <div class="summary-row">
+          <svg width="88" height="88" viewBox="0 0 88 88">
+            <circle cx="44" cy="44" r="40" fill="none" stroke="var(--deep)" stroke-width="7"/>
+            <circle cx="44" cy="44" r="40" fill="none" stroke="var(--blue)" stroke-width="7" stroke-linecap="round" id="ring-fill" style="filter:drop-shadow(0 0 6px var(--blue-glow))"/>
+            <text x="44" y="47" text-anchor="middle" dominant-baseline="middle" class="ring-pct mono" id="ring-pct">0%</text>
+          </svg>
+          <div class="summary-meta">
+            <div class="campaign-title" id="side-campaign">—</div>
+            <div class="campaign-desc" id="side-desc">—</div>
+            <div><span class="tag">TARGET</span><span class="mono frost" id="side-target">—</span></div>
+            <div class="campaign-stats"><span id="side-tests">0/0 tests</span><span class="steel"> · </span><span id="side-rerun">R1</span></div>
+          </div>
+        </div>
+        <div class="summary-actions">
+          <button class="btn btn-primary" id="pause-btn">⏸ Pause</button>
+          <button class="btn btn-danger" id="stop-btn">⏹ Stop</button>
+          <button class="btn" id="report-btn">📄 Report</button>
+        </div>
+      </div>
+      <div class="side-zone side-zone-tests">
+        <div class="zone-head">
+          <span class="zone-label">TEST SUITE</span>
+          <button class="zone-action" id="expand-all">Collapse all</button>
+        </div>
+        <div class="test-tree" id="test-tree"></div>
+      </div>
+      <div class="side-zone">
+        <div class="zone-head"><span class="zone-label">FINDINGS FILTER</span></div>
+        <div class="filter-body">
+          <div class="filter-row" id="sev-filter"></div>
+          <div class="filter-row engines" id="engine-filter"></div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="nav-strip" id="nav-strip">
+        <div class="mode-toggle" id="mode-toggle">
+          <button class="active" id="mode-sim">SIM</button>
+          <button id="mode-live">LIVE</button>
+          <span class="dot dot-green pulse-dot" id="mode-dot"></span>
+        </div>
+      </div>
+
+      <div class="workspace" id="view-topology">
+        <div class="topology-wrap">
+          <span class="topo-title">5G SA TOPOLOGY — LIVE</span>
+          <span class="topo-hint">attack edges animate in real-time</span>
+          <svg id="topo-svg" viewBox="0 0 1520 420" preserveAspectRatio="xMidYMid meet"></svg>
+        </div>
+        <div class="timeline">
+          <button class="timeline-handle" id="timeline-handle">
+            <span>▾</span><span class="zone-label">ATTACK CHAINS</span>
+            <span class="mono steel" id="chain-summary">8 steps · MITRE FiGHT mapped</span>
+            <span class="mono frost">▶ SCRUBBER</span>
+          </button>
+          <div class="timeline-body">
+            <div class="timeline-lanes" id="timeline-lanes"></div>
+            <div class="timeline-legend">
+              <span><span class="legend-dot" style="background:var(--blue)"/> in progress</span>
+              <span><span class="legend-dot" style="background:var(--green)"/> success</span>
+              <span><span class="legend-dot" style="background:var(--amber)"/> partial</span>
+              <span><span class="legend-dot" style="background:var(--red)"/> blocked</span>
+              <span class="mono steel">scrub to replay progression</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-view" id="view-campaigns" style="display:none"></div>
+      <div class="module" id="view-autonomous" style="display:none"></div>
+      <div class="module" id="view-crossdomain" style="display:none"></div>
+      <div class="module" id="view-predictive" style="display:none"></div>
+      <div class="module" id="view-digitaltwin" style="display:none"></div>
+      <div class="module" id="view-adversarial" style="display:none"></div>
+      <div class="grid-view" id="view-findings" style="display:none"></div>
+      <div class="grid-view" id="view-reports" style="display:none"></div>
+      <div class="grid-view" id="view-plugins" style="display:none"></div>
+      <div class="grid-view" id="view-settings" style="display:none"></div>
+    </main>
+
+    <aside class="feed">
+      <div class="feed-head">
+        <span class="feed-title">LIVE FINDINGS</span>
+        <span class="feed-total mono steel" id="feed-total">0</span>
+      </div>
+      <div class="feed-search">
+        <span class="steel">⌕</span>
+        <input id="feed-search" placeholder="Search findings… ( / )" />
+      </div>
+      <div class="feed-summary mono" id="feed-summary">
+        <span class="sev-count critical">0 critical</span>
+        <span class="sev-count high">0 high</span>
+        <span class="sev-count medium">0 medium</span>
+        <span class="sev-count low">0 low</span>
+        <span class="sev-count info">0 info</span>
+      </div>
+      <div class="feed-list" id="feed-list"></div>
+    </aside>
+  </div>
+
+  <!-- StatusBar -->
+  <div class="statusbar" id="statusbar">
+    <div class="sb-left mono">
+      <span class="sb-campaign ellipsis" id="sb-campaign">—</span>
+      <span class="sb-sep">|</span>
+      <span>Runtime: <span id="sb-runtime">00:00:00</span></span>
+      <span class="sb-sep">|</span>
+      <span id="sb-findings">Findings: <b style="color:var(--red)">0 C</b>, <b style="color:var(--amber)">0 H</b>, <b style="color:var(--frost)">0 M</b>, <b style="color:var(--steel)">0 L</b></span>
+    </div>
+    <div class="sb-right mono">
+      <span id="sb-clock">--:--:--</span>
+      <span class="sb-sep">|</span>
+      <span><span class="dot dot-green" id="nats-dot"></span> NATS: <span id="nats-txt">Connected</span></span>
+      <span class="sb-sep">|</span>
+      <span>SDR1: <span style="color:var(--green)">Active</span> <span class="steel">(2100MHz)</span></span>
+      <span class="sb-sep">|</span>
+      <span>SDR2: <span id="sdr2-txt" style="color:var(--frost)">Idle</span></span>
+      <span class="sb-sep">|</span>
+      <span class="steel">ns/chimera-prod</span>
+      <span class="sb-sep">|</span>
+      <span>CPU: <span id="sb-cpu">0%</span></span>
+      <span class="sb-sep">|</span>
+      <span>MEM: <span id="sb-mem">0.0GB</span></span>
+      <span class="sb-sep">|</span>
+      <span>GPU: <span id="sb-gpu">0%</span></span>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div class="modal-overlay" id="modal-campaign">
+    <div class="modal">
+      <div class="modal-head"><h3>New Campaign</h3><button class="icon-btn close-modal" data-close="modal-campaign">✕</button></div>
+      <div class="modal-body">
+        <div class="form-row"><label>CAMPAIGN NAME</label><input value="5G Core Audit 05" /></div>
+        <div class="form-row"><label>TARGET</label><input value="Lab-5GC-Production-Mirror" /></div>
+        <div class="form-row"><label>DESCRIPTION</label><textarea rows="3">Full SBI fuzzing campaign against the free5GC production mirror. Includes rogue NF injection and slice isolation stress.</textarea></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn close-modal" data-close="modal-campaign">Cancel</button>
+        <button class="btn btn-primary" id="launch-campaign">Launch Campaign</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-emergency">
+    <div class="modal">
+      <div class="modal-head"><h3 style="color:var(--red)">⚠ Emergency Stop</h3><button class="icon-btn close-modal" data-close="modal-emergency">✕</button></div>
+      <div class="modal-body">
+        <p class="frost" style="font-size:13px">Immediately halt all AIR, CORE and ML engine activity. In-flight tests will be aborted and the campaign will enter a halted state.</p>
+        <div class="form-row"><label>REASON (OPTIONAL)</label><input placeholder="Suspicious traffic on lab network…" /></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn close-modal" data-close="modal-emergency">Cancel</button>
+        <button class="btn btn-danger" id="confirm-emergency">⛔ Halt Everything</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-engine">
+    <div class="modal">
+      <div class="modal-head"><h3 id="engine-modal-title">Engine</h3><button class="icon-btn close-modal" data-close="modal-engine">✕</button></div>
+      <div class="modal-body">
+        <div class="kpi-row" id="engine-kpis"></div>
+        <div class="zone-label" style="margin-top:16px;margin-bottom:8px">LIVE LOG</div>
+        <div id="engine-log"></div>
+      </div>
+      <div class="modal-foot"><button class="btn close-modal" data-close="modal-engine">Close</button></div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modal-report">
+    <div class="modal" style="width:680px">
+      <div class="modal-head"><h3>Campaign Report</h3><button class="icon-btn close-modal" data-close="modal-report">✕</button></div>
+      <div class="modal-body">
+        <div class="kpi-row" id="report-kpis"></div>
+        <div class="zone-label" style="margin:16px 0 8px">TOP FINDINGS</div>
+        <div id="report-top"></div>
+      </div>
+      <div class="modal-foot"><button class="btn btn-primary">Export PDF</button><button class="btn close-modal" data-close="modal-report">Close</button></div>
+    </div>
+  </div>
+
+  <script>
+  /* ================= Data ================= */
+  const CAMPAIGNS = [
+    { id: 'c1', name: '5G Core Audit 04', status: 'running', progress: 68, desc: 'Full SBI fuzzing campaign against the free5GC production mirror. Includes rogue NF injection and slice isolation stress.', target: 'Lab-5GC-Production-Mirror', testTotal: 12, testDone: 7, rerun: 0 },
+    { id: 'c2', name: 'Air Interface Recon 02', status: 'completed', progress: 100, desc: 'Site survey of emulated 5G-SA network: cell search, SIB1 decode, TMSI→IMSI mapping under null cipher.', target: 'Lab-RF-Enclosure-1', testTotal: 10, testDone: 10, rerun: 1 },
+    { id: 'c3', name: 'ML Poisoning Campaign 01', status: 'draft', progress: 12, desc: '30-day simulated data poisoning against the NWDAF subscriber analytics model.', target: 'NWDAF-Sim-GPU', testTotal: 9, testDone: 1, rerun: 0 },
+    { id: 'c4', name: 'Legacy Interworking SS7/Diameter', status: 'completed', progress: 100, desc: 'IDR spoofing, CLR DoS and SendRoutingInfo-for-SM interception against the Diameter edge.', target: 'DRA-Simulator', testTotal: 14, testDone: 14, rerun: 2 },
+  ];
+  const ENGINES = [
+    { id: 'air', label: 'AIR', health: 'healthy', progress: 68, cpu: 42, mem: 3.1, uptime: 0 },
+    { id: 'core', label: 'CORE', health: 'healthy', progress: 68, cpu: 61, mem: 4.8, uptime: 0 },
+    { id: 'ml', label: 'ML', health: 'degraded', progress: 66, cpu: 87, mem: 9.2, uptime: 0 },
+  ];
+  const ENG_LOGS = {
+    air: [
+      { lvl: 'INFO', ts: '14:28:01', msg: 'srsRAN fork v21.10+ loaded — instrumented attack plugins active' },
+      { lvl: 'INFO', ts: '14:28:04', msg: 'UHD 4.x detected on /dev/usrp0 (B210, 2100 MHz)' },
+      { lvl: 'INFO', ts: '14:31:40', msg: 'Rogue gNB cell 17 broadcast started @ +6dB over legit cell' },
+      { lvl: 'INFO', ts: '14:33:22', msg: 'UE-0003 attached via authentication relay (MitM)' },
+      { lvl: 'WARN', ts: '14:37:05', msg: 'Null cipher bid accepted by UE-0003 — AS Security Mode downgrade' },
+      { lvl: 'INFO', ts: '14:41:12', msg: 'PDCP known-plaintext capture buffered (seq 2001-2210)' },
+    ],
+    core: [
+      { lvl: 'INFO', ts: '14:20:12', msg: 'free5GC deployed: AMF SMF UPF UDM AUSF NRF NSSF PCF (ns/chimera-prod)' },
+      { lvl: 'INFO', ts: '14:22:48', msg: 'NRF knowledge graph: 37 endpoints, 412 params ingested' },
+      { lvl: 'INFO', ts: '14:30:19', msg: 'SBI fuzz Nudm_SDM_Get — boundary case #412 returned 200' },
+      { lvl: 'INFO', ts: '14:33:01', msg: 'Rogue NF registered as Nudm_SDM with spoofed cert' },
+      { lvl: 'ERROR', ts: '14:36:44', msg: 'Slice isolation stress — UPF resource ceiling exceeded' },
+      { lvl: 'WARN', ts: '14:39:30', msg: 'Subscriber data exfil chunked — 412 records in flight' },
+    ],
+    ml: [
+      { lvl: 'INFO', ts: '14:21:30', msg: 'Triton serving lstm-ae-v3 (NWDAF sim) on :8001' },
+      { lvl: 'INFO', ts: '14:27:44', msg: 'FGSM sweep complete — 50% evasion @ ε=0.42' },
+      { lvl: 'INFO', ts: '14:32:10', msg: 'PGD bounded perturbation run in progress (physically realizable)' },
+      { lvl: 'WARN', ts: '14:38:20', msg: 'Adversarial E2 replay against RIC-xApp — action policy flip' },
+      { lvl: 'INFO', ts: '14:42:55', msg: 'Beam predictor confidence drift detected (Δ +0.17)' },
+    ],
+  };
+  const FINDING_POOL = [
+    { severity: 'critical', cvss: 9.8, engine: 'core', title: 'Rogue NF Registered as Nudm_SDM', detail: 'Spoofed service-based interface accepted by NRF discovery; impersonates subscriber data management function.', technique: 'FIGHT-T1104', target: 'nrf · 10.10.0.15' },
+    { severity: 'critical', cvss: 9.1, engine: 'core', title: 'OAuth Token Forge on Nudm_SDM_Get', detail: 'Forged OAuth 2.0 client_credentials token grants full SDM read on UDM.', technique: 'FIGHT-T1022', target: 'udm · 10.10.0.14' },
+    { severity: 'high', cvss: 8.6, engine: 'air', title: 'Null Cipher Accepted in AS Security Mode', detail: 'UE-0003 accepted null cipher bid — radio traffic recoverable in plaintext.', technique: 'FIGHT-T1003', target: 'UE-0003' },
+    { severity: 'high', cvss: 8.1, engine: 'core', title: 'Nausf_UEAuth Type Confusion', detail: 'Malformed SUPI on AUSF auth path triggers fallback to legacy vector set.', technique: 'FIGHT-T1014', target: 'ausf · 10.10.0.16' },
+    { severity: 'high', cvss: 7.7, engine: 'air', title: 'Rogue Cell Takeover — 3 UE Handoff', detail: 'ROGUE-gNB forces 3 UE handoff; IMSI captured via authentication relay.', technique: 'FIGHT-T1004', target: 'UE-0001/2/3' },
+    { severity: 'medium', cvss: 6.5, engine: 'core', title: 'Nudm_SDM_Get Boundary Fuzz #412', detail: 'Boundary case returns 200 with attacker-controlled subscription data.', technique: 'FIGHT-T1022', target: 'udm · 10.10.0.14' },
+    { severity: 'medium', cvss: 6.1, engine: 'core', title: 'Slice Escape Tunneling Detected', detail: 'Encapsulated traffic crosses slice boundary to default slice.', technique: 'FIGHT-T1090', target: 'upf · 10.10.0.13' },
+    { severity: 'medium', cvss: 5.9, engine: 'air', title: 'Band Jamming on n78 (ARFCN 634240)', detail: 'Continuous interference suppresses legit cell; UE camping drift.', technique: 'FIGHT-T1498', target: 'gNB-1' },
+    { severity: 'low', cvss: 3.7, engine: 'core', title: 'NRF Knowledge Graph Drift', detail: '37 endpoints ingested; 3 stale service registrations unconverged.', technique: 'FIGHT-T1595', target: 'nrf · 10.10.0.15' },
+    { severity: 'low', cvss: 3.1, engine: 'air', title: 'SIB1 Broadcast Info Leak', detail: 'Cell SIB1 exposes PLMN/TAC metadata useful for mapping.', technique: 'FIGHT-T1595', target: 'gNB-1' },
+    { severity: 'info', cvss: 0, engine: 'ml', title: 'FGSM Sweep Complete — 50% Evasion', detail: 'Evasion achieved on 50% of test samples @ ε=0.42 against NWDAF analytics.', technique: 'FIGHT-T1578', target: 'NWDAF-SIM' },
+    { severity: 'info', cvss: 0, engine: 'ml', title: 'PGD Bounded Perturbation Run Done', detail: 'Physically-realizable adversarial radio pattern produced for RIC-xApp.', technique: 'FIGHT-T1578', target: 'RIC-xApp' },
+  ];
+  const CHAIN = [
+    { id: 'c1', lane: 'recon', name: 'NRF Service Discovery', figth: 'FIGHT-T1595', engine: 'core', status: 'success', age: 300 },
+    { id: 'c2', lane: 'recon', name: 'IMSI Catch via Paging', figth: 'FIGHT-T1004', engine: 'air', status: 'success', age: 240 },
+    { id: 'c3', lane: 'compromise', name: 'Null Cipher Bidding', figth: 'FIGHT-T1003', engine: 'air', status: 'success', age: 180 },
+    { id: 'c4', lane: 'compromise', name: 'OAuth Token Forge', figth: 'FIGHT-T1022', engine: 'core', status: 'success', age: 120 },
+    { id: 'c5', lane: 'compromise', name: 'Rogue NF Registration', figth: 'FIGHT-T1104', engine: 'core', status: 'in-progress', age: 60 },
+    { id: 'c6', lane: 'movement', name: 'Slice Escape Tunneling', figth: 'FIGHT-T1090', engine: 'core', status: 'success', age: 200 },
+    { id: 'c7', lane: 'movement', name: 'Subscriber Data Exfil', figth: 'FIGHT-T1008', engine: 'core', status: 'partial', age: 90 },
+    { id: 'c8', lane: 'impact', name: 'SMF Resource Exhaustion', figth: 'FIGHT-T1499', engine: 'core', status: 'queued', age: 0 },
+  ];
+  const LANES = [
+    { id: 'recon', label: 'RECONNAISSANCE' },
+    { id: 'compromise', label: 'INITIAL COMPROMISE' },
+    { id: 'movement', label: 'PERSISTENCE & LATERAL MOVEMENT' },
+    { id: 'impact', label: 'DATA EXFIL / IMPACT' },
+  ];
+  const TESTS = {
+    air: [
+      { name: 'NR cell search / MIB-SIB1 decode', status: 'passed', dur: '01m 24s' },
+      { name: 'Passive IMSI catching (null cipher)', status: 'passed', dur: '05m 20s' },
+      { name: 'Rogue gNB takeover — 3 UE handoff', status: 'passed', dur: '04m 20s' },
+      { name: 'Null cipher AS Security Mode bid', status: 'running' },
+      { name: 'PDCP known-plaintext capture', status: 'pending' },
+      { name: 'NEA2/NEA3 crypto analysis', status: 'pending' },
+    ],
+    core: [
+      { name: 'Nudm_SDM_Get boundary fuzz', status: 'passed', dur: '30m 00s' },
+      { name: 'Nausf_UEAuth type confusion', status: 'passed', dur: '20m 40s' },
+      { name: 'Nsmf_PDUSession recursive nesting', status: 'passed', dur: '35m 00s' },
+      { name: 'Rogue NF event subscription', status: 'running' },
+      { name: 'Slice isolation stress', status: 'passed', dur: '18m 12s' },
+      { name: 'PFD / flow description bypass', status: 'pending' },
+    ],
+    ml: [
+      { name: 'NWDAF FGSM evasion sweep', status: 'passed', dur: '09m 22s' },
+      { name: 'RIC-xApp PGD perturbation', status: 'running' },
+      { name: 'Model inversion query budget', status: 'pending' },
+    ],
+  };
+  const NODES = [
+    { id: 'sdr1', label: 'SDR1', sub: 'USRP B210 · 2100MHz', x: 90, y: 190, shape: 'diamond', cls: 'glow-blue', kind: 'air' },
+    { id: 'sdr2', label: 'SDR2', sub: 'USRP B210 · idle', x: 150, y: 300, shape: 'diamond', cls: '', kind: 'air' },
+    { id: 'gnb1', label: 'gNB-1', sub: 'n78 · PCI 311', x: 320, y: 210, shape: 'tri', cls: 'glow-blue', kind: 'air' },
+    { id: 'roguegnb', label: 'ROGUE-gNB', sub: '+6 dB over cell', x: 370, y: 340, shape: 'tri', cls: 'glow-c', kind: 'air' },
+    { id: 'ue1', label: 'UE-0001', sub: 'attached', x: 520, y: 130, shape: 'circle', cls: '', kind: 'air' },
+    { id: 'ue2', label: 'UE-0002', sub: 'attached', x: 575, y: 290, shape: 'circle', cls: '', kind: 'air' },
+    { id: 'ue3', label: 'UE-0003', sub: 'relayed', x: 610, y: 200, shape: 'circle', cls: 'glow-c', kind: 'air' },
+    { id: 'amf', label: 'AMF', sub: '10.10.0.11', x: 790, y: 130, shape: 'hex', cls: '', kind: 'core' },
+    { id: 'smf', label: 'SMF', sub: '10.10.0.12', x: 850, y: 270, shape: 'hex', cls: 'glow-c', kind: 'core' },
+    { id: 'upf', label: 'UPF', sub: '10.10.0.13', x: 930, y: 360, shape: 'hex', cls: '', kind: 'core' },
+    { id: 'udm', label: 'UDM', sub: '10.10.0.14', x: 1000, y: 150, shape: 'hex', cls: '', kind: 'core' },
+    { id: 'nrf', label: 'NRF', sub: '10.10.0.15', x: 1070, y: 250, shape: 'hex', cls: '', kind: 'core' },
+    { id: 'ausf', label: 'AUSF', sub: '10.10.0.16', x: 890, y: 60, shape: 'hex', cls: '', kind: 'core' },
+    { id: 'pcf', label: 'PCF', sub: '10.10.0.17', x: 1150, y: 110, shape: 'hex', cls: '', kind: 'core' },
+    { id: 'roguenf', label: 'ROGUE-NF', sub: 'Nudm_SDM spoof', x: 1120, y: 360, shape: 'hex', cls: 'glow-c', kind: 'core' },
+    { id: 'nwdaf', label: 'NWDAF-SIM', sub: 'lstm-ae-v3 · triton:8001', x: 1310, y: 200, shape: 'sq', cls: 'glow-blue', kind: 'ml' },
+    { id: 'ric', label: 'RIC-xApp', sub: 'traffic-steer-v2 · E2', x: 1390, y: 310, shape: 'sq', cls: '', kind: 'ml' },
+  ];
+  const EDGES = [
+    { s: 'sdr1', t: 'gnb1', kind: 'radio' }, { s: 'gnb1', t: 'ue1', kind: 'radio' }, { s: 'gnb1', t: 'ue2', kind: 'radio' },
+    { s: 'gnb1', t: 'amf', kind: 'nas', label: 'N2' }, { s: 'amf', t: 'smf', kind: 'sbi' }, { s: 'amf', t: 'udm', kind: 'sbi' },
+    { s: 'amf', t: 'ausf', kind: 'sbi' }, { s: 'smf', t: 'upf', kind: 'sbi' }, { s: 'nrf', t: 'amf', kind: 'sbi' },
+    { s: 'nrf', t: 'smf', kind: 'sbi' }, { s: 'udm', t: 'ausf', kind: 'sbi' }, { s: 'nwdaf', t: 'amf', kind: 'sbi' },
+    { s: 'nwdaf', t: 'smf', kind: 'sbi' }, { s: 'nwdaf', t: 'upf', kind: 'sbi' }, { s: 'ric', t: 'gnb1', kind: 'sbi', label: 'E2' },
+    { s: 'roguegnb', t: 'ue3', kind: 'attack', label: 'Rogue cell takeover' },
+    { s: 'roguegnb', t: 'gnb1', kind: 'attack', label: 'Band jamming' },
+    { s: 'roguenf', t: 'nrf', kind: 'attack', label: 'Spoofed register' },
+    { s: 'roguenf', t: 'udm', kind: 'exfil', label: 'SDM exfil' },
+    { s: 'smf', t: 'roguenf', kind: 'done', label: 'Auth bypass' },
+    { s: 'ric', t: 'amf', kind: 'attack', label: 'Adversarial E2' },
+    { s: 'ue3', t: 'amf', kind: 'nas', label: 'N1 relayed' },
+  ];
+  const NAV = [
+    { id: 'campaigns', label: 'Campaigns', icon: '☰' },
+    { id: 'autonomous', label: 'Autonomous', icon: '🤖' },
+    { id: 'crossdomain', label: 'Cross-Domain', icon: '⇄' },
+    { id: 'predictive', label: 'Predictive', icon: '🗓' },
+    { id: 'digitaltwin', label: 'Digital Twin', icon: '◧' },
+    { id: 'adversarial', label: 'Adversarial', icon: '🧠' },
+    { id: 'topology', label: 'Topology', icon: '⌁' },
+    { id: 'findings', label: 'Findings', icon: '⌖' },
+    { id: 'reports', label: 'Reports', icon: '📄' },
+    { id: 'plugins', label: 'Plugins', icon: '🧩' },
+    { id: 'settings', label: 'Settings', icon: '⚙' },
+  ];
+
+  /* ================= State ================= */
+  const state = {
+    campaign: CAMPAIGNS[0],
+    engines: JSON.parse(JSON.stringify(ENGINES)),
+    findings: [],
+    notifs: [],
+    unread: 0,
+    paused: false,
+    emergency: false,
+    running: true,
+    runtime: 0,
+    mode: 'sim',
+    sevFilter: { critical: true, high: true, medium: true, low: true, info: true },
+    engFilter: { air: true, core: true, ml: true },
+  };
+  const $ = (id) => document.getElementById(id);
+
+  function fmtDur(s) { const h = String(Math.floor(s / 3600)).padStart(2, '0'); const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0'); const sec = String(s % 60).padStart(2, '0'); return `${h}:${m}:${sec}`; }
+  function fmtRel(sec) { if (sec < 5) return 'just now'; if (sec < 60) return `${sec}s ago`; if (sec < 3600) return `${Math.floor(sec / 60)}m ago`; return `${Math.floor(sec / 3600)}h ago`; }
+
+  /* ================= Build ================= */
+  function buildNavStrip() {
+    const strip = $('nav-strip');
+    const mode = strip.querySelector('.mode-toggle');
+    NAV.forEach((n) => {
+      const b = document.createElement('button');
+      b.className = 'nav-tab' + (n.id === 'topology' ? ' active' : '');
+      b.dataset.view = n.id;
+      b.innerHTML = `<span>${n.icon}</span> ${n.label}`;
+      b.onclick = () => setView(n.id);
+      strip.insertBefore(b, mode);
+    });
+  }
+
+  function setView(id) {
+    state.view = id;
+    document.querySelectorAll('.nav-tab').forEach((t) => t.classList.toggle('active', t.dataset.view === id));
+    ['topology', 'campaigns', 'autonomous', 'crossdomain', 'predictive', 'digitaltwin', 'adversarial', 'findings', 'reports', 'plugins', 'settings'].forEach((v) => {
+      const el = $('view-' + v);
+      if (el) el.style.display = (v === id) ? 'block' : 'none';
+    });
+    if (id === 'campaigns') renderCampaigns();
+    if (id === 'findings') renderFindingsGrid();
+    if (id === 'reports') renderReports();
+    if (id === 'plugins') renderPlugins();
+    if (id === 'settings') renderSettings();
+    if (id === 'autonomous') renderAutonomous();
+    if (id === 'crossdomain') renderCrossDomain();
+    if (id === 'predictive') renderPredictive();
+    if (id === 'digitaltwin') renderDigitalTwin();
+    if (id === 'adversarial') renderAdversarial();
+  }
+
+  function buildCampaignSelector() {
+    const list = $('campaign-list');
+    list.innerHTML = '';
+    CAMPAIGNS.forEach((c) => {
+      const btn = document.createElement('button');
+      btn.className = 'campaign-item' + (c.id === state.campaign.id ? ' active' : '');
+      btn.innerHTML = `<span class="dot dot-${c.status === 'running' ? 'blue pulse-dot' : c.status === 'completed' ? 'green' : 'grey'}"></span>
+        <span class="campaign-item-name ellipsis">${c.name}</span>
+        <span class="campaign-item-meta mono">${c.status.toUpperCase()} · ${c.progress}%</span>`;
+      btn.onclick = () => { state.campaign = CAMPAIGNS.find((x) => x.id === c.id); buildCampaignSelector(); syncCampaign(); $('campaign-dropdown').style.display = 'none'; };
+      list.appendChild(btn);
+    });
+  }
+
+  function syncCampaign() {
+    const c = state.campaign;
+    $('campaign-name').textContent = c.name;
+    $('campaign-dot').className = 'dot dot-' + (c.status === 'running' ? 'blue pulse-dot' : c.status === 'completed' ? 'green' : 'grey');
+    $('side-campaign').textContent = c.name;
+    $('side-desc').textContent = c.description;
+    $('side-target').textContent = c.target;
+    $('side-tests').textContent = `${c.testDone}/${c.testTotal} tests`;
+    $('side-rerun').textContent = 'R' + (c.rerun + 1);
+    $('sb-campaign').textContent = (state.paused ? '⏸ PAUSED — ' : state.emergency ? '⛔ EMERGENCY STOP — ' : '') + c.name;
+    const r = 40, CIRC = 2 * Math.PI * r, dash = (c.progress / 100) * CIRC;
+    $('ring-fill').setAttribute('stroke-dasharray', `${dash} ${CIRC}`);
+    $('ring-pct').textContent = c.progress + '%';
+  }
+
+  function buildEngines() {
+    const trio = $('engine-trio');
+    trio.innerHTML = '';
+    state.engines.forEach((e) => {
+      const btn = document.createElement('button');
+      btn.className = 'engine-chip';
+      const dotCls = { healthy: 'dot-green', degraded: 'dot-amber', failed: 'dot-red', offline: 'dot-grey' }[e.health];
+      const fill = e.health === 'failed' ? 'fill-red' : e.health === 'degraded' ? 'fill-amber' : 'fill-blue';
+      btn.innerHTML = `<span class="dot ${dotCls}"></span><span class="engine-chip-name">${e.label}</span>
+        <span class="engine-bar"><span class="engine-bar-fill ${fill}" style="width:${e.progress}%"></span></span>
+        <span class="engine-chip-pct mono">${e.progress}%</span>`;
+      btn.onclick = () => openEngine(e.id);
+      trio.appendChild(btn);
+    });
+  }
+
+  function buildTestTree() {
+    const tree = $('test-tree');
+    tree.innerHTML = '';
+    [['air', '📡 Air Interface Tests'], ['core', '🔬 Core Network Tests'], ['ml', '🧠 ML / Adversarial Tests']].forEach(([key, label]) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'tree-group';
+      const head = document.createElement('button');
+      head.className = 'tree-group-head';
+      head.innerHTML = `<span>▾</span><span>${label}</span><span class="mono steel">${TESTS[key].length} tests</span>`;
+      head.onclick = () => { const b = wrap.querySelector('.tree-items'); b.style.display = b.style.display === 'none' ? 'block' : 'none'; };
+      wrap.appendChild(head);
+      const body = document.createElement('div');
+      body.className = 'tree-items';
+      TESTS[key].forEach((t) => {
+        const item = document.createElement('button');
+        item.className = 'tree-item';
+        const icon = t.status === 'passed' ? '✓' : t.status === 'failed' ? '✕' : t.status === 'running' ? '⟳' : '○';
+        const color = t.status === 'passed' ? 'var(--green)' : t.status === 'failed' ? 'var(--red)' : t.status === 'running' ? 'var(--blue)' : 'var(--steel)';
+        item.innerHTML = `<span style="color:${color}">${icon}</span><span class="tree-item-name ellipsis">${t.name}</span>
+          ${t.status === 'running' ? '<span class="spin" style="color:var(--blue)">⟳</span>' : t.status === 'passed' ? `<span class="mono steel tree-dur">${t.dur || ''}</span>` : ''}`;
+        body.appendChild(item);
+      });
+      wrap.appendChild(body);
+      tree.appendChild(wrap);
+    });
+  }
+
+  function buildFilters() {
+    const sev = $('sev-filter');
+    sev.innerHTML = '';
+    ['critical', 'high', 'medium', 'low', 'info'].forEach((s) => {
+      const b = document.createElement('button');
+      b.className = 'sev-pill' + (state.sevFilter[s] ? ' sev-on ' + s : '');
+      b.textContent = s;
+      b.onclick = () => { state.sevFilter[s] = !state.sevFilter[s]; buildFilters(); renderFindings(); };
+      sev.appendChild(b);
+    });
+    const eng = $('engine-filter');
+    eng.innerHTML = '';
+    [['air', 'blue'], ['core', 'green'], ['ml', 'purple']].forEach(([e, dot]) => {
+      const label = document.createElement('label');
+      label.className = 'engine-check';
+      label.innerHTML = `<input type="checkbox" ${state.engFilter[e] ? 'checked' : ''}><span class="dot dot-${dot}"></span>${e.toUpperCase()}`;
+      label.querySelector('input').onchange = (ev) => { state.engFilter[e] = ev.target.checked; renderFindings(); };
+      eng.appendChild(label);
+    });
+  }
+
+  /* topology */
+  function drawTopology() {
+    const svg = $('topo-svg');
+    const ns = 'http://www.w3.org/2000/svg';
+    svg.innerHTML = '';
+    const pos = {};
+    NODES.forEach((n) => { pos[n.id] = { x: n.x, y: n.y }; });
+    EDGES.forEach((e) => {
+      const a = pos[e.s], b = pos[e.t];
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('x1', a.x); line.setAttribute('y1', a.y); line.setAttribute('x2', b.x); line.setAttribute('y2', b.y);
+      line.setAttribute('class', { attack: 'edge-attack', exfil: 'edge-exfil', radio: 'edge-radio', nas: 'edge-nas', sbi: 'edge-sbi', done: 'edge-done' }[e.kind]);
+      line.setAttribute('stroke-width', e.kind === 'radio' ? 1 : e.kind === 'attack' || e.kind === 'exfil' ? 1.8 : 1.2);
+      svg.appendChild(line);
+      if (e.label) {
+        const txt = document.createElementNS(ns, 'text');
+        txt.setAttribute('x', (a.x + b.x) / 2); txt.setAttribute('y', (a.y + b.y) / 2 - 4);
+        txt.setAttribute('font-size', '8'); txt.setAttribute('text-anchor', 'middle');
+        txt.setAttribute('fill', e.kind === 'attack' ? 'var(--red)' : e.kind === 'exfil' ? 'var(--amber)' : 'var(--steel)');
+        txt.textContent = e.label;
+        svg.appendChild(txt);
+      }
+    });
+    NODES.forEach((n) => {
+      const g = document.createElementNS(ns, 'g');
+      g.setAttribute('class', 'topo-node' + (n.cls ? ' ' + n.cls : ''));
+      const cx = n.x, cy = n.y, r = 17;
+      let shape;
+      if (n.shape === 'diamond') { shape = document.createElementNS(ns, 'polygon'); shape.setAttribute('points', `${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}`); }
+      else if (n.shape === 'tri') { shape = document.createElementNS(ns, 'polygon'); shape.setAttribute('points', `${cx},${cy - r} ${cx + r * 0.95},${cy + r * 0.7} ${cx - r * 0.95},${cy + r * 0.7}`); }
+      else if (n.shape === 'hex') { shape = document.createElementNS(ns, 'polygon'); let pts = ''; for (let i = 0; i < 6; i++) { const a = Math.PI / 3 * i - Math.PI / 6; pts += `${cx + r * Math.cos(a)},${cy + r * Math.sin(a)} `; } shape.setAttribute('points', pts); }
+      else if (n.shape === 'sq') { shape = document.createElementNS(ns, 'rect'); shape.setAttribute('x', cx - r); shape.setAttribute('y', cy - r); shape.setAttribute('width', r * 2); shape.setAttribute('height', r * 2); shape.setAttribute('rx', 4); }
+      else { shape = document.createElementNS(ns, 'circle'); shape.setAttribute('cx', cx); shape.setAttribute('cy', cy); shape.setAttribute('r', r); }
+      const color = n.kind === 'air' ? 'var(--blue)' : n.kind === 'core' ? 'var(--green)' : 'var(--purple)';
+      shape.setAttribute('fill', 'rgba(14,21,38,0.92)');
+      shape.setAttribute('stroke', color);
+      shape.setAttribute('stroke-width', '1.6');
+      shape.setAttribute('stroke-dasharray', n.id.startsWith('rogue') ? '4 3' : '');
+      g.appendChild(shape);
+      const l1 = document.createElementNS(ns, 'text');
+      l1.setAttribute('x', cx); l1.setAttribute('y', cy + 3); l1.setAttribute('text-anchor', 'middle'); l1.setAttribute('class', 'n-label');
+      l1.textContent = n.label;
+      g.appendChild(l1);
+      const l2 = document.createElementNS(ns, 'text');
+      l2.setAttribute('x', cx); l2.setAttribute('y', cy + 26); l2.setAttribute('text-anchor', 'middle'); l2.setAttribute('class', 'n-sub');
+      l2.textContent = n.sub;
+      g.appendChild(l2);
+      svg.appendChild(g);
+    });
+  }
+
+  /* attack chain */
+  function renderChain() {
+    const lanes = $('timeline-lanes');
+    lanes.innerHTML = '';
+    LANES.forEach((lane) => {
+      const row = document.createElement('div');
+      row.className = 'timeline-lane';
+      const label = document.createElement('div');
+      label.className = 'lane-label';
+      label.textContent = lane.label;
+      row.appendChild(label);
+      const track = document.createElement('div');
+      track.className = 'lane-track';
+      const steps = CHAIN.filter((s) => s.lane === lane.id);
+      if (!steps.length) track.innerHTML = '<span class="lane-empty steel mono">No activity</span>';
+      steps.forEach((s, i) => {
+        if (i > 0) { const ar = document.createElement('span'); ar.className = 'chain-arrow'; ar.textContent = '▶'; track.appendChild(ar); }
+        const node = document.createElement('div');
+        node.className = 'chain-node ' + s.status;
+        const labelTxt = { success: 'SUCCESS', 'in-progress': 'IN PROGRESS', queued: 'QUEUED', partial: 'PARTIAL', blocked: 'BLOCKED' }[s.status];
+        const pillCls = { success: 'pill-green', blocked: 'pill-critical', 'in-progress': 'pill-info', partial: 'pill-high', queued: 'pill-grey' }[s.status];
+        const engineColor = { air: 'var(--blue)', core: 'var(--green)', ml: 'var(--purple)' }[s.engine];
+        node.innerHTML = `<div class="chain-node-top"><span class="chain-name ellipsis">${s.name}</span><span class="pill ${pillCls}">${labelTxt}</span></div>
+          <div class="chain-node-meta mono"><span style="color:${engineColor}">${s.engine.toUpperCase()}</span><span>${s.figth}</span><span class="steel">${fmtRel(s.age || 120)}</span></div>`;
+        track.appendChild(node);
+      });
+      row.appendChild(track);
+      lanes.appendChild(row);
+    });
+  }
+
+  /* findings */
+  function renderFindings() {
+    const counts = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
+    state.findings.forEach((f) => { counts[f.severity] += 1; });
+    ['critical', 'high', 'medium', 'low', 'info'].forEach((s) => { const el = document.querySelector(`.sev-count.${s}`); if (el) el.textContent = `${counts[s]} ${s}`; });
+    $('feed-total').textContent = state.findings.length;
+    $('sb-findings').innerHTML = `Findings: <b style="color:var(--red)">${counts.critical} C</b>, <b style="color:var(--amber)">${counts.high} H</b>, <b style="color:var(--frost)">${counts.medium} M</b>, <b style="color:var(--steel)">${counts.low} L</b>`;
+    const q = $('feed-search').value.toLowerCase();
+    const filtered = state.findings.filter((f) => (state.sevFilter[f.severity] && state.engFilter[f.engine]) && (!q || f.title.toLowerCase().includes(q) || f.detail.toLowerCase().includes(q) || f.target.toLowerCase().includes(q) || f.technique.toLowerCase().includes(q)));
+    const list = $('feed-list');
+    if (!filtered.length) { list.innerHTML = '<div class="feed-empty"><div class="feed-empty-check">✓</div><div class="frost">All Tests Passed — 0 Findings</div><div>No findings match the current filter</div></div>'; return; }
+    list.innerHTML = '';
+    filtered.forEach((f) => {
+      const card = document.createElement('div');
+      card.className = 'finding-card sev-' + f.severity + (f.acked ? ' acked' : '');
+      const engineColor = { air: 'var(--blue)', core: 'var(--green)', ml: 'var(--purple)' }[f.engine];
+      card.innerHTML = `<div class="finding-top mono"><span class="finding-sev">${f.severity.toUpperCase()}</span><span class="finding-cvss">${f.cvss.toFixed(1)}</span>
+        <span class="finding-engine">${f.engine === 'air' ? '◉' : f.engine === 'core' ? '⬢' : '◈'} ${f.engine.toUpperCase()}</span><span class="finding-time steel">${fmtRel(f.age)}</span></div>
+        <div class="finding-title">${f.title}</div><div class="finding-detail mono">${f.detail}</div>
+        <div class="finding-target mono"><span class="pill pill-grey">${f.technique}</span><span class="steel">${f.target}</span></div>
+        <div class="finding-actions"><button class="link-btn">+ Report</button><button class="link-btn">${f.acked ? 'Acknowledged' : 'Ack'}</button><button class="link-btn danger">✕ Dismiss</button></div>`;
+      card.querySelectorAll('button').forEach((b) => {
+        b.onclick = () => {
+          if (b.textContent.includes('Ack')) f.acked = true;
+          if (b.textContent.includes('Dismiss')) state.findings = state.findings.filter((x) => x.id !== f.id);
+          renderFindings();
+        };
+      });
+      list.appendChild(card);
+    });
+  }
+
+  function emitFinding() {
+    if (state.paused || state.emergency) return;
+    const f = FINDING_POOL[Math.floor(Math.random() * FINDING_POOL.length)];
+    state.findings.unshift({ id: 'f' + Date.now(), ...f, age: 0, acked: false });
+    if (state.findings.length > 40) state.findings.pop();
+    state.notifs.unshift({ txt: f.title, meta: `${f.engine.toUpperCase()} · ${f.severity.toUpperCase()}`, sev: f.severity });
+    if (state.notifs.length > 12) state.notifs.pop();
+    state.unread += 1;
+    renderFindings();
+    renderNotifs();
+  }
+
+  function renderNotifs() {
+    const badge = $('notif-badge');
+    badge.style.display = state.unread ? 'inline-block' : 'none';
+    badge.textContent = state.unread > 99 ? '99+' : state.unread;
+    $('notif-list').innerHTML = state.notifs.length
+      ? state.notifs.map((n) => `<div class="notif-item"><span class="dot dot-${n.sev === 'critical' ? 'red' : n.sev === 'high' ? 'amber' : n.sev === 'info' ? 'blue' : 'grey'}"></span><div><div class="n-text">${n.txt}</div><div class="n-meta mono steel">${n.meta}</div></div></div>`).join('')
+      : '<div class="notif-item frost" style="font-size:12px">No notifications</div>';
+  }
+
+  /* secondary grid views */
+  function renderCampaigns() {
+    $('view-campaigns').innerHTML = `<div class="grid-view-head"><span class="grid-view-title">CAMPAIGNS</span><button class="btn btn-primary" id="new-campaign-btn">+ New Campaign</button></div>
+      <div class="card-grid">${CAMPAIGNS.map((c) => `<div class="card campaign-card">
+        <div class="campaign-card-head"><span class="dot dot-${c.status === 'running' ? 'blue pulse-dot' : c.status === 'completed' ? 'green' : 'grey'}"></span>
+        <span class="campaign-card-name">${c.name}</span><span class="mono steel">${c.status.toUpperCase()}</span></div>
+        <div class="campaign-card-desc">${c.description}</div>
+        <div class="campaign-card-target">${c.target}</div>
+        <div class="campaign-card-progress"><div class="meter"><span class="fill-blue" style="width:${c.progress}%"></span></div><span class="mono steel">${c.progress}%</span></div>
+        <div class="campaign-card-actions"><button class="btn btn-ghost">${c.status === 'running' ? 'Open Report' : 'View Report'}</button><button class="btn btn-ghost">Rerun</button></div></div>`).join('')}</div>`;
+    const nb = $('new-campaign-btn');
+    if (nb) nb.onclick = () => openModal('modal-campaign');
+    $('view-campaigns').querySelectorAll('.campaign-card-actions .btn').forEach((b) => { if (b.textContent.includes('Report')) b.onclick = () => openReport(); });
+  }
+
+  function renderFindingsGrid() {
+    const rows = state.findings.length
+      ? state.findings.map((f) => `<tr><td><span class="pill pill-${f.severity}">${f.severity}</span></td><td class="mono">${f.cvss.toFixed(1)}</td><td class="mono">${f.engine.toUpperCase()}</td><td>${f.title}</td><td class="mono">${f.technique}</td><td class="mono">${f.target}</td></tr>`).join('')
+      : '<tr><td colspan="6" class="frost">No findings yet this session.</td></tr>';
+    $('view-findings').innerHTML = `<div class="grid-view-head"><span class="grid-view-title">FINDINGS BROWSER</span><span class="mono steel">${state.findings.length} results</span></div>
+      <table class="findings-table"><thead><tr><th>Severity</th><th>CVSS</th><th>Engine</th><th>Finding</th><th>Technique</th><th>Target</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
+
+  function renderReports() {
+    const reports = [
+      { name: '5G Core Audit 04', date: '2026-08-06', grade: 'C', size: '4.2 MB' },
+      { name: 'Air Interface Recon 02', date: '2026-08-05', grade: 'B', size: '2.8 MB' },
+      { name: 'Legacy Interworking SS7/Diameter', date: '2026-08-04', grade: 'D', size: '6.1 MB' },
+    ];
+    const colorOf = (g) => g === 'A' ? 'var(--green)' : g === 'B' ? 'var(--blue)' : g === 'C' ? 'var(--amber)' : 'var(--red)';
+    $('view-reports').innerHTML = `<div class="grid-view-head"><span class="grid-view-title">REPORTS</span><button class="btn btn-ghost">Export Archive</button></div>
+      <div class="card-grid">${reports.map((r) => `<div class="card report-card">
+        <div class="report-card-grade" style="color:${colorOf(r.grade)}">${r.grade}</div>
+        <div class="report-card-name">${r.name}</div>
+        <div class="mono steel" style="font-size:11px">${r.date} · ${r.size} · MITRE FiGHT mapped</div>
+        <div class="campaign-card-actions"><button class="btn btn-ghost view-report">View</button><button class="btn btn-ghost">PDF</button></div></div>`).join('')}</div>`;
+    $('view-reports').querySelectorAll('.view-report').forEach((b) => b.onclick = () => openReport());
+  }
+
+  function renderPlugins() {
+    const plugins = [
+      { name: 'wifi-wpa3-engine', version: 'v0.3.0', desc: 'WiFi/WPA3 attack engine using the same gRPC orchestration contract.', healthy: true },
+      { name: 'bluetooth-btle-engine', version: 'v0.1.2', desc: 'BLE advertising/MitM fuzzing engine (experimental).', healthy: false },
+      { name: 'hello-world-engine', version: 'v1.0.0', desc: 'Reference plugin implementing Initialize / HealthCheck / ExecuteTest.', healthy: true },
+    ];
+    $('view-plugins').innerHTML = `<div class="grid-view-head"><span class="grid-view-title">PLUGIN REGISTRY</span><button class="btn btn-primary">+ Register Plugin</button></div>
+      <div class="card-grid">${plugins.map((p) => `<div class="card plugin-card">
+        <div class="plugin-head"><span class="dot dot-${p.healthy ? 'green' : 'red'}"></span><span class="mono">${p.name}</span><span class="mono steel">${p.version}</span></div>
+        <div class="campaign-card-desc">${p.desc}</div>
+        <div class="campaign-card-actions"><button class="btn btn-ghost">Documentation</button><button class="btn btn-ghost">gRPC Contract</button></div></div>`).join('')}</div>`;
+  }
+
+  function renderSettings() {
+    $('view-settings').innerHTML = `<div class="grid-view-head"><span class="grid-view-title">SETTINGS</span></div>
+      <div class="settings-list">
+        <div class="setting-row"><span>Theme</span><span class="mono frost">Void Black (fixed)</span></div>
+        <div class="setting-row"><span>Colorblind mode (blue/orange/teal)</span><label class="switch"><input type="checkbox"><span class="slider"></span></label></div>
+        <div class="setting-row"><span>Reduce motion</span><label class="switch"><input type="checkbox"><span class="slider"></span></label></div>
+        <div class="setting-row"><span>Vault credential backend</span><span class="mono frost">vault://chimera-prod · role engine-*</span></div>
+        <div class="setting-row"><span>Audit ledger</span><span class="mono frost">s3://chimera-ledger (object-lock enabled)</span></div>
+      </div><div style="margin-top:16px"><button class="btn btn-primary" id="wizard-btn">Create Test Campaign</button></div>`;
+    const wb = $('wizard-btn');
+    if (wb) wb.onclick = () => openModal('modal-campaign');
+  }
+
+  /* revolution module views */
+  const moduleViews = {
+    autonomous: `<h2>Autonomous</h2><div class="m-sub">Revolution 1 — autonomous attack path discovery</div>
+      <div class="phase-strip"><span class="phase-chip on">PLANNING</span><span class="phase-chip">GATED</span><span class="phase-chip">VERIFYING</span></div>
+      <div class="m-grid">
+        <div class="m-card"><div class="k">TARGETS OBSERVED</div><div class="v">6</div><div class="d">wifi · nf · ue surfaces with live scoring</div></div>
+        <div class="m-card"><div class="k">ACTIVE PLAN</div><div class="v" style="color:var(--blue)">Rogue NF → UDM</div><div class="d">score 0.91 · 6 steps · gated before destructive</div></div>
+        <div class="m-card"><div class="k">LLM-GENERATED</div><div class="v" style="color:var(--purple)">Yes</div><div class="d">plan drafted by threat-model brain</div></div>
+        <div class="m-card"><div class="k">REMEDIATIONS</div><div class="v" style="color:var(--green)">MIGRATE · ISOLATE</div><div class="d">highest-confidence strategies first</div></div>
+      </div>
+      <table class="m-table"><tr><th>STEP</th><th>TECHNIQUE</th><th>RISK</th><th>SANDBOX</th></tr>
+      <tr><td>1. Enumerate NRF services</td><td class="mono">FIGHT-T1595</td><td class="mono">passive</td><td>—</td></tr>
+      <tr><td>2. Register rogue NF</td><td class="mono">FIGHT-T1104</td><td class="mono">active</td><td>yes</td></tr>
+      <tr><td>3. Forge OAuth token</td><td class="mono">FIGHT-T1022</td><td class="mono">active</td><td>yes</td></tr>
+      <tr><td>4. Exfil SDM records</td><td class="mono">FIGHT-T1008</td><td class="mono" style="color:var(--red)">destructive</td><td><span style="color:var(--amber)">REQUIRES GATE</span></td></tr></table>`,
+    crossdomain: `<h2>Cross-Domain</h2><div class="m-sub">Revolution 2 — cross-domain attack orchestration & chaining</div>
+      <div class="phase-strip"><span class="phase-chip on">RUNNING</span><span class="phase-chip">stage 4/9</span><span class="phase-chip" style="color:var(--amber)">rollback armed</span></div>
+      <div class="m-grid">
+        <div class="m-card"><div class="k">DOMAIN 1</div><div class="v" style="color:var(--blue)">wifi</div><div class="d">exploited</div></div>
+        <div class="m-card"><div class="k">DOMAIN 2</div><div class="v" style="color:var(--green)">5g-ran</div><div class="d">exploited</div></div>
+        <div class="m-card"><div class="k">DOMAIN 3</div><div class="v" style="color:var(--amber)">5g-core</div><div class="d">exploited</div></div>
+        <div class="m-card"><div class="k">DOMAIN 4</div><div class="v" style="color:var(--purple)">edge</div><div class="d">reachable</div></div>
+      </div>
+      <table class="m-table"><tr><th>STAGE</th><th>ACTION</th><th>STATUS</th><th>ON FAILURE</th></tr>
+      <tr><td class="mono">stg-01</td><td>Rogue gNB takeover</td><td><span class="pill pill-green">SUCCESS</span></td><td class="mono">continue</td></tr>
+      <tr><td class="mono">stg-02</td><td>Null cipher downgrade</td><td><span class="pill pill-green">SUCCESS</span></td><td class="mono">retry</td></tr>
+      <tr><td class="mono">stg-03</td><td>Slice escape pivot</td><td><span class="pill pill-green">SUCCESS</span></td><td class="mono">abort</td></tr>
+      <tr><td class="mono">stg-04</td><td>Enterprise SSO relay</td><td><span class="pill pill-info">RUNNING</span></td><td class="mono">abort</td></tr></table>`,
+    predictive: `<h2>Predictive</h2><div class="m-sub">Revolution 3 — predictive defense & threat forecasting</div>
+      <div class="m-grid">
+        <div class="m-card"><div class="k">FORECAST HORIZON</div><div class="v">90d</div><div class="d">risk projection from 8 threat-intel feeds</div></div>
+        <div class="m-card"><div class="k">ACTIVE TRENDS</div><div class="v" style="color:var(--red)">12 ↑</div><div class="d">Rogue-NF registration +31% MoM</div></div>
+        <div class="m-card"><div class="k">WEAPONIZED PROB</div><div class="v" style="color:var(--amber)">67%</div><div class="d">Nudm_SDM_Get flaw within 90d</div></div>
+        <div class="m-card"><div class="k">ACCURACY</div><div class="v" style="color:var(--green)">91%</div><div class="d">precision on 412 predictions</div></div>
+      </div>
+      <div class="m-card"><div class="k">ACT NOW — CRITICAL</div><div class="d" style="margin-top:6px"><b class="frost">Patch UPF</b> — slice escape CVE · 18 days remaining · <span class="mono" style="color:var(--red)">score 96</span></div></div>`,
+    digitaltwin: `<h2>Digital Twin</h2><div class="m-sub">Revolution 4 — digital twin simulation & adversarial training</div>
+      <div class="m-grid">
+        <div class="m-card"><div class="k">TWIN FIDELITY</div><div class="v" style="color:var(--green)">98.4%</div><div class="d">free5GC mirror · 18 containers</div></div>
+        <div class="m-card"><div class="k">SIM MODE</div><div class="v" style="color:var(--blue)">RL</div><div class="d">reinforcement-learning attack policy</div></div>
+        <div class="m-card"><div class="k">ITERATIONS</div><div class="v" id="twin-iters">940</div><div class="d">RL epochs of attacker vs defender</div></div>
+        <div class="m-card"><div class="k">DEFENDER WIN</div><div class="v" style="color:var(--green)">54%</div><div class="d">mean-time-to-detect improving</div></div>
+      </div>
+      <table class="m-table"><tr><th>EPOCH</th><th>ATTACKER WIN</th><th>DETECTION</th><th>MTTD</th></tr>
+      <tr><td class="mono">E-128</td><td class="mono">62%</td><td class="mono" style="color:var(--green)">41%</td><td class="mono">1.2s</td></tr>
+      <tr><td class="mono">E-256</td><td class="mono">55%</td><td class="mono" style="color:var(--green)">53%</td><td class="mono">0.9s</td></tr>
+      <tr><td class="mono">E-384</td><td class="mono">47%</td><td class="mono" style="color:var(--green)">68%</td><td class="mono">0.7s</td></tr>
+      <tr><td class="mono">E-512 (live)</td><td class="mono">44%</td><td class="mono" style="color:var(--green)">74%</td><td class="mono">0.6s</td></tr></table>`,
+    adversarial: `<h2>Adversarial</h2><div class="m-sub">Revolution 5 — adversarial AI attack engine (AI vs AI)</div>
+      <div class="m-grid">
+        <div class="m-card"><div class="k">MODELS ASSESSED</div><div class="v">5</div><div class="d">NWDAF · RIC-xApp · 6G-native · beam · slice</div></div>
+        <div class="m-card"><div class="k">EVASION RATE</div><div class="v" style="color:var(--red)">50%</div><div class="d">FGSM @ ε=0.42</div></div>
+        <div class="m-card"><div class="k">POISONING</div><div class="v" style="color:var(--amber)">2 models</div><div class="d">label-flipping · backdoor triggers</div></div>
+        <div class="m-card"><div class="k">EXTRACTION</div><div class="v" style="color:var(--purple)">traffic-steer-v2</div><div class="d">inversion queries: 12,400</div></div>
+      </div>
+      <table class="m-table"><tr><th>MODEL</th><th>TYPE</th><th>SECURITY</th><th>STATUS</th></tr>
+      <tr><td class="mono">nwdaf-analytics</td><td>anomaly-detector</td><td class="mono" style="color:var(--red)">41%</td><td><span class="pill pill-critical">COMPROMISED</span></td></tr>
+      <tr><td class="mono">ric-xapp</td><td>traffic-classifier</td><td class="mono" style="color:var(--amber)">58%</td><td><span class="pill pill-high">ASSESSED</span></td></tr>
+      <tr><td class="mono">beam-predictor</td><td>ml-forecast</td><td class="mono" style="color:var(--green)">79%</td><td><span class="pill pill-green">REMEDIATED</span></td></tr></table>`,
+  };
+  function renderAutonomous() { $('view-autonomous').innerHTML = moduleViews.autonomous; }
+  function renderCrossDomain() { $('view-crossdomain').innerHTML = moduleViews.crossdomain; }
+  function renderPredictive() { $('view-predictive').innerHTML = moduleViews.predictive; }
+  function renderDigitalTwin() { $('view-digitaltwin').innerHTML = moduleViews.digitaltwin; }
+  function renderAdversarial() { $('view-adversarial').innerHTML = moduleViews.adversarial; }
+
+  /* engine modal */
+  function openEngine(id) {
+    const e = state.engines.find((x) => x.id === id);
+    $('engine-modal-title').textContent = e.label + ' ENGINE — ' + e.id.toUpperCase();
+    const dotCls = { healthy: 'dot-green', degraded: 'dot-amber', failed: 'dot-red' }[e.health];
+    $('engine-kpis').innerHTML = `
+      <div class="kpi"><div class="kpi-val" style="color:var(--green)">${e.uptime.toFixed(1)}h</div><div class="kpi-label">UPTIME</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--blue)">${e.progress}%</div><div class="kpi-label">PROGRESS</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--amber)">${e.cpu}%</div><div class="kpi-label">CPU</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--frost)">${e.mem.toFixed(1)}GB</div><div class="kpi-label">MEM</div></div>
+      <div class="kpi"><div class="kpi-val"><span class="dot ${dotCls}"></span></div><div class="kpi-label">${e.health.toUpperCase()}</div></div>`;
+    $('engine-log').innerHTML = (ENG_LOGS[id] || []).map((l) => `<div class="log-line"><span class="steel">${l.ts}</span> <span class="${l.lvl}">${l.lvl}</span> <span class="frost">${l.msg}</span></div>`).join('');
+    openModal('modal-engine');
+  }
+
+  function openReport() {
+    const counts = { critical: 0, high: 0, medium: 0, low: 0 };
+    state.findings.forEach((f) => { if (counts[f.severity] !== undefined) counts[f.severity] += 1; });
+    $('report-kpis').innerHTML = `
+      <div class="kpi"><div class="kpi-val">${state.campaign.progress}%</div><div class="kpi-label">COMPLETION</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--red)">${counts.critical}</div><div class="kpi-label">CRITICAL</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--amber)">${counts.high}</div><div class="kpi-label">HIGH</div></div>
+      <div class="kpi"><div class="kpi-val" style="color:var(--frost)">${counts.medium}</div><div class="kpi-label">MEDIUM</div></div>
+      <div class="kpi"><div class="kpi-val">${counts.low}</div><div class="kpi-label">LOW</div></div>`;
+    const top = state.findings.slice(0, 3);
+    $('report-top').innerHTML = top.length ? top.map((f) => `<div class="finding-card sev-${f.severity}" style="margin-bottom:8px"><div class="finding-top mono"><span class="finding-sev">${f.severity.toUpperCase()}</span><span class="finding-cvss">${f.cvss.toFixed(1)}</span></div><div class="finding-title">${f.title}</div><div class="finding-detail mono">${f.detail}</div></div>`).join('')
+      : '<div class="frost">No findings yet this session.</div>';
+    openModal('modal-report');
+  }
+
+  function openModal(id) { $(id).classList.add('open'); }
+  function closeModal(id) { $(id).classList.remove('open'); }
+  document.querySelectorAll('.close-modal').forEach((b) => b.onclick = () => closeModal(b.dataset.close));
+  document.querySelectorAll('.modal-overlay').forEach((o) => o.addEventListener('click', (e) => { if (e.target === o) closeModal(o.id); }));
+
+  /* timers */
+  function tick() {
+    if (state.paused || state.emergency) return;
+    state.runtime += 1;
+    $('sb-runtime').textContent = fmtDur(state.runtime);
+    $('sb-clock').textContent = new Date().toLocaleTimeString('en-GB');
+    state.engines.forEach((e) => { e.uptime = state.runtime / 3600; e.cpu = Math.min(99, Math.max(12, e.cpu + (Math.random() * 10 - 5))); });
+    const air = state.engines[0], core = state.engines[1], ml = state.engines[2];
+    $('sb-cpu').textContent = Math.round((air.cpu + core.cpu + ml.cpu) / 3) + '%';
+    $('sb-mem').textContent = (air.mem + core.mem + ml.mem).toFixed(1) + 'GB';
+    $('sb-gpu').textContent = Math.round(ml.cpu) + '%';
+    state.findings.forEach((f) => { f.age += 1; });
+    if (state.campaign.status === 'running' && state.campaign.progress < 100) {
+      state.campaign.progress = Math.min(100, state.campaign.progress + 0.2);
+      state.campaign.testDone = Math.min(state.campaign.testTotal, Math.round(state.campaign.progress / 100 * state.campaign.testTotal));
+      state.engines.forEach((e) => { e.progress = state.campaign.progress; });
+      syncCampaign(); buildEngines();
+    }
+    renderFindings();
+  }
+
+  function chainAdvance() {
+    if (state.paused || state.emergency) return;
+    const running = CHAIN.find((s) => s.status === 'in-progress');
+    const next = CHAIN.find((s) => s.status === 'queued');
+    if (running) { running.status = Math.random() > 0.25 ? 'success' : 'partial'; running.age = 0; }
+    if (next) { next.status = Math.random() > 0.2 ? 'in-progress' : 'blocked'; next.age = 0; }
+    CHAIN.forEach((s) => { if (s.status !== 'queued') s.age = (s.age || 0) + 7; });
+    renderChain();
+  }
+
+  /* events */
+  $('pause-btn').onclick = () => { state.paused = !state.paused; $('pause-btn').innerHTML = state.paused ? '▶ Resume' : '⏸ Pause'; syncCampaign(); };
+  $('stop-btn').onclick = () => { state.paused = true; state.running = false; state.campaign.status = 'draft'; $('pause-btn').disabled = true; $('stop-btn').disabled = true; syncCampaign(); };
+  $('emergency-btn').onclick = () => openModal('modal-emergency');
+  $('confirm-emergency').onclick = () => { state.emergency = true; state.paused = true; $('emergency-banner').classList.add('show'); $('statusbar').classList.add('emergency'); $('nats-dot').className = 'dot dot-red pulse-dot'; $('nats-txt').textContent = 'Disconnected — Retrying…'; syncCampaign(); closeModal('modal-emergency'); };
+  $('logo-btn').onclick = () => openModal('modal-campaign');
+  $('report-btn').onclick = openReport;
+  $('settings-btn').onclick = () => setView('settings');
+  $('launch-campaign').onclick = () => closeModal('modal-campaign');
+  $('notif-btn').onclick = () => { $('notif-panel').style.display = $('notif-panel').style.display === 'none' ? 'block' : 'none'; state.unread = 0; renderNotifs(); };
+  $('campaign-trigger').onclick = () => { $('campaign-dropdown').style.display = $('campaign-dropdown').style.display === 'none' ? 'block' : 'none'; };
+  $('campaign-search').oninput = (e) => { const q = e.target.value.toLowerCase(); $('campaign-list').querySelectorAll('.campaign-item').forEach((b) => { b.style.display = b.textContent.toLowerCase().includes(q) ? '' : 'none'; }); };
+  $('feed-search').oninput = renderFindings;
+  $('mode-sim').onclick = () => { state.mode = 'sim'; $('mode-sim').classList.add('active'); $('mode-live').classList.remove('active'); $('mode-dot').className = 'dot dot-green pulse-dot'; };
+  $('mode-live').onclick = () => { state.mode = 'live'; $('mode-live').classList.add('active'); $('mode-sim').classList.remove('active'); $('mode-dot').className = 'dot dot-amber pulse-dot'; };
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { $('campaign-dropdown').style.display = 'none'; $('notif-panel').style.display = 'none'; } if (e.key === '/') { $('feed-search').focus(); e.preventDefault(); } });
+  document.addEventListener('mousedown', (e) => { if (!$('campaign-selector').contains(e.target)) $('campaign-dropdown').style.display = 'none'; if (!$('notif-btn').contains(e.target) && !$('notif-panel').contains(e.target)) $('notif-panel').style.display = 'none'; });
+
+  /* init */
+  buildNavStrip();
+  buildCampaignSelector();
+  syncCampaign();
+  buildEngines();
+  buildTestTree();
+  buildFilters();
+  drawTopology();
+  renderChain();
+  renderFindings();
+  renderNotifs();
+  emitFinding();
+  setInterval(tick, 1000);
+  setInterval(emitFinding, 3800);
+  setInterval(chainAdvance, 7000);
+  setInterval(() => { if (!state.paused && !state.emergency) renderFindings(); }, 1000);
+  </script>
+</body>
+</html>
