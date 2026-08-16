@@ -686,11 +686,12 @@
     /* ================= counters ================= */
     function animate(el) {
       const target = +el.dataset.target;
+      const suffix = el.querySelector('small') ? ' ' + el.querySelector('small').outerHTML : '';
       const dur = 900, t0 = performance.now();
       function step(now) {
         const p = Math.min(1, (now - t0) / dur);
         const eased = 1 - Math.pow(1 - p, 3);
-        el.textContent = Math.round(target * eased).toLocaleString('en-US');
+        el.innerHTML = Math.round(target * eased).toLocaleString('en-US') + suffix;
         if (p < 1) requestAnimationFrame(step);
       }
       requestAnimationFrame(step);

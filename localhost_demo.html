@@ -160,7 +160,7 @@
     .lane-empty { font-size: 10px; }
     .chain-arrow { color: var(--steel); font-size: 10px; }
     .chain-node { border: 1px solid var(--app-line); border-radius: 8px; padding: 6px 10px; background: var(--panel-2); min-width: 150px; }
-    .chain-node.running { border-color: var(--blue); box-shadow: 0 0 10px var(--blue-glow); }
+    .chain-node.running, .chain-node.in-progress { border-color: var(--blue); box-shadow: 0 0 10px var(--blue-glow); }
     .chain-node.success { border-color: var(--green); }
     .chain-node.blocked { border-color: var(--red); box-shadow: 0 0 10px rgba(239,68,68,0.3); }
     .chain-node.partial { border-color: var(--amber); }
@@ -765,7 +765,7 @@
     $('campaign-name').textContent = c.name;
     $('campaign-dot').className = 'dot dot-' + (c.status === 'running' ? 'blue pulse-dot' : c.status === 'completed' ? 'green' : 'grey');
     $('side-campaign').textContent = c.name;
-    $('side-desc').textContent = c.description;
+    $('side-desc').textContent = c.desc;
     $('side-target').textContent = c.target;
     $('side-tests').textContent = `${c.testDone}/${c.testTotal} tests`;
     $('side-rerun').textContent = 'R' + (c.rerun + 1);
@@ -980,7 +980,7 @@
       <div class="card-grid">${CAMPAIGNS.map((c) => `<div class="card campaign-card">
         <div class="campaign-card-head"><span class="dot dot-${c.status === 'running' ? 'blue pulse-dot' : c.status === 'completed' ? 'green' : 'grey'}"></span>
         <span class="campaign-card-name">${c.name}</span><span class="mono steel">${c.status.toUpperCase()}</span></div>
-        <div class="campaign-card-desc">${c.description}</div>
+        <div class="campaign-card-desc">${c.desc}</div>
         <div class="campaign-card-target">${c.target}</div>
         <div class="campaign-card-progress"><div class="meter"><span class="fill-blue" style="width:${c.progress}%"></span></div><span class="mono steel">${c.progress}%</span></div>
         <div class="campaign-card-actions"><button class="btn btn-ghost">${c.status === 'running' ? 'Open Report' : 'View Report'}</button><button class="btn btn-ghost">Rerun</button></div></div>`).join('')}</div>`;
