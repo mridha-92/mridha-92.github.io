@@ -1,0 +1,104 @@
+/* ============================================================
+   Aegis VAPT & CSAM Platform – Showcase Page
+   Extends mridha_style.css with project-specific styles
+   ============================================================ */
+
+#aegis-hero {
+  position: relative;
+  text-align: center;
+  padding: 90px 24px 60px;
+  overflow: hidden;
+}
+.aegis-hero-inner { position: relative; max-width: 860px; margin: 0 auto; }
+.aegis-shield { width: 150px; height: 150px; margin: 0 auto 24px; }
+.aegis-shield svg { width: 100%; height: 100%; filter: drop-shadow(0 0 26px rgba(0, 229, 255, 0.3)); }
+#aegis-hero h1 {
+  margin: 16px 0 14px;
+  font-size: 46px;
+  font-weight: 800;
+  background: linear-gradient(90deg, #fff, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.aegis-sub { color: var(--muted); font-size: 17px; max-width: 720px; margin: 0 auto; }
+.aegis-meta { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 26px 0 8px; }
+
+.aegis-stats {
+  display: flex;
+  gap: 28px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 40px 24px;
+  margin-bottom: 20px;
+}
+.aegis-stats .stat strong { font-size: 32px; }
+.aegis-stats .stat span { max-width: 150px; }
+
+.aegis-lead { max-width: 860px; }
+.aegis-lead p { color: var(--muted); font-size: 16px; }
+
+/* ---------- Feature cards ---------- */
+.feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.feature-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 0 24px rgba(0, 229, 255, 0.18);
+}
+.feature-card h3 { font-family: var(--mono); font-size: 15px; color: var(--accent); margin-bottom: 10px; }
+.feature-card p { color: var(--muted); font-size: 14px; }
+
+/* ---------- Architecture ---------- */
+.arch-grid { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; max-width: 720px; }
+.arch-node { display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.arch-flow { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.arch-branches { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+.arch-layer {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 18px;
+  background: var(--bg-soft);
+}
+.arch-layer.accent-line { border-color: var(--accent); color: var(--accent); }
+.arch-sub { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.arrow { color: var(--muted); font-size: 14px; }
+
+/* ---------- Tech stack ---------- */
+.stack-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+.stack-cat { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+.stack-cat h3 { font-size: 15px; margin-bottom: 14px; color: var(--accent); font-family: var(--mono); }
+
+/* ---------- Security ---------- */
+.security-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+
+/* ---------- Performance ---------- */
+.perf-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+.perf-card {
+  background: linear-gradient(135deg, var(--card), var(--bg-soft));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 26px 20px;
+  text-align: center;
+}
+.perf-card strong { display: block; font-size: 26px; color: var(--accent); font-family: var(--mono); margin-bottom: 6px; }
+.perf-card span { color: var(--muted); font-size: 13px; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 820px) {
+  #aegis-hero h1 { font-size: 32px; }
+  .feature-grid { grid-template-columns: 1fr; }
+  .stack-grid, .security-grid { grid-template-columns: 1fr; }
+  .perf-grid { grid-template-columns: 1fr 1fr; }
+}
