@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% seo %}
+  <link rel="stylesheet" href="{{ '/assets/css/radar.css' | relative_url }}">
+  <link rel="alternate" type="application/atom+xml"
+        title="Cyberpent Radar Feed"
+        href="{{ '/feed.xml' | relative_url }}">
+</head>
+
+<body>
+  <header class="radar-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="{{ '/radar/' | relative_url }}">
+        <span class="brand-mark">CYBERPENT</span><span class="brand-suffix">://RADAR</span><span class="cursor">&#9612;</span>
+      </a>
+      <nav class="radar-nav">
+        <a href="{{ '/' | relative_url }}">&larr; Portfolio</a>
+        <a href="{{ '/radar/' | relative_url }}">Feed</a>
+        <a href="{{ '/feed.xml' | relative_url }}" title="Atom feed">RSS&nbsp;&#9741;</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap radar-main">
+    {{ content }}
+  </main>
+
+  <footer class="radar-footer">
+    <div class="wrap">
+      <p><strong>CYBERPENT RADAR</strong> &mdash; automated threat feed. Machine-generated from
+      CISA advisories, CERT alerts and security media; may contain unverified claims.</p>
+      <p class="fine">Refreshed every 2 hours &middot; <a href="{{ '/feed.xml' | relative_url }}">Atom feed</a> &middot;
+      &copy; {{ site.time | date: '%Y' }} cyberpent.cc.cd</p>
+    </div>
+  </footer>
+</body>
+</html>

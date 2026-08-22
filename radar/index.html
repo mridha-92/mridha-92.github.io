@@ -1,0 +1,93 @@
+---
+layout: radar_default
+title: "Cyberpent Radar - Live Threat Intelligence Feed"
+---
+
+<section class="hero">
+  <p class="terminal-line"><span class="prompt">$</span> tail -f /var/log/world.threats<span class="cursor">&#9612;</span></p>
+  <h1 class="hero-title">Cyberpent Radar</h1>
+  <p class="hero-sub">
+    Automated threat intelligence &mdash; CISA advisories, CERT alerts and security media
+    ingested every 2 hours, enriched with CVE / IOC extraction and severity triage.
+  </p>
+</section>
+
+<div class="toolbar">
+  <input id="radar-search" type="search" placeholder="Search title, CVE, tag&hellip;"
+         aria-label="Search threat reports" autocomplete="off">
+  <div class="filter-chips" role="group" aria-label="Category filter">
+    <button type="button" class="chip-btn active" data-filter="all">All</button>
+    <button type="button" class="chip-btn" data-filter="cve">CVE</button>
+    <button type="button" class="chip-btn" data-filter="ransomware">Ransomware</button>
+    <button type="button" class="chip-btn" data-filter="threat-intel">Threat&nbsp;Intel</button>
+  </div>
+</div>
+
+<div id="radar-feed" class="feed-grid">
+  {% for post in site.posts limit: 60 %}
+  <article class="card"
+           data-cats="{{ post.categories | join: ' ' | downcase }}"
+           data-tags="{{ post.tags | join: ' ' | downcase }}"
+           data-title="{{ post.title | downcase | escape }}"
+           data-cves="{% for c in post.cves %}{{ c | downcase }} {% endfor %}">
+    <header class="card-head">
+      {% assign sev = post.severity | default: "medium" %}
+      <span class="badge sev-{{ sev }}">{{ sev | upcase }}</span>
+      <time datetime="{{ post.date | date_to_xmlschema }}">
+        {{ post.date | date: "%Y-%m-%d %H:%M UTC" }}
+      </time>
+    </header>
+    <h2 class="card-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>
+    <p class="card-excerpt">{{ post.content | strip_html | truncatewords: 38 }}</p>
+    <footer class="card-meta">
+      <div class="chips">
+        {% for category in post.categories %}<span class="chip chip-cat">{{ category }}</span>{% endfor %}
+        {% for cve in post.cves limit: 4 %}
+        <a class="chip chip-cve" rel="noopener" target="_blank"
+           href="https://nvd.nist.gov/vuln/detail/{{ cve }}">{{ cve }}</a>
+        {% endfor %}
+      </div>
+      <a class="read-more" href="{{ post.url | relative_url }}">Read report &rarr;</a>
+    </footer>
+  </article>
+  {% endfor %}
+
+  {% if site.posts == empty %}
+  <p class="empty-state">[!] Radar online. First reports arrive within 2 hours of the next pipeline run.</p>
+  {% endif %}
+</div>
+
+<p id="radar-empty" class="empty-state" hidden>[!] No alerts match the current filter.</p>
+
+<script>
+(function () {
+  var box   = document.getElementById('radar-search');
+  var chips = Array.prototype.slice.call(document.querySelectorAll('.chip-btn'));
+  var cards = Array.prototype.slice.call(document.querySelectorAll('#radar-feed .card'));
+  var empty = document.getElementById('radar-empty');
+  var cat   = 'all';
+
+  function apply() {
+    var q = box.value.trim().toLowerCase(), visible = 0;
+    cards.forEach(function (card) {
+      var catsOk = cat === 'all' ||
+                   (' ' + card.dataset.cats + ' ').indexOf(' ' + cat + ' ') !== -1;
+      var hay = (card.dataset.title + ' ' + card.dataset.tags + ' ' + card.dataset.cves).toLowerCase();
+      var show = catsOk && (!q || hay.indexOf(q) !== -1);
+      card.style.display = show ? '' : 'none';
+      if (show) { visible++; }
+    });
+    if (cards.length) { empty.hidden = visible !== 0; }
+  }
+
+  box.addEventListener('input', apply);
+  chips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      chips.forEach(function (c) { c.classList.remove('active'); });
+      chip.classList.add('active');
+      cat = chip.dataset.filter;
+      apply();
+    });
+  });
+})();
+</script>

@@ -1,0 +1,51 @@
+# =============================================================
+#  Cyberpent Radar - Jekyll configuration
+#  Live at https://www.cyberpent.cc.cd/radar/
+# =============================================================
+
+title: Soumen Mridha - Cybersecurity Portfolio
+url: "https://www.cyberpent.cc.cd"
+baseurl: ""
+lang: en
+timezone: Etc/UTC
+
+permalink: /radar/:year/:month/:day/:title.html
+markdown: kramdown
+highlighter: rouge
+kramdown:
+  input: GFM
+
+future: false
+
+# Plugins whitelisted by GitHub Pages
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+
+feed:
+  path: feed.xml
+
+# Radar reports only; portfolio HTML pages are plain static files.
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: radar_post
+      comments: false
+  - scope:
+      path: "radar"
+    values:
+      layout: radar_default
+
+# Never ship operational files to the live site
+exclude:
+  - scripts/
+  - .github/
+  - vendor/
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - requirements.txt
+  - LICENSE
+  - node_modules/

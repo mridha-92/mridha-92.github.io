@@ -1,0 +1,18 @@
+# Jekyll build artifacts
+_site/
+.jekyll-cache/
+.jekyll-metadata
+vendor/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Local secrets / env - NEVER commit API keys
+.env
+*.local
+
+# OS noise
+.DS_Store
+Thumbs.db
