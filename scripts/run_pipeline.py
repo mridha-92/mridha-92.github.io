@@ -6,8 +6,13 @@ Cyberpent - Automated Threat Intelligence Pipeline
 Serverless ingestion engine designed to run inside GitHub Actions every
 2 hours. It will:
 
-  1. INGEST      - Pull RSS/Atom feeds from CISA, BleepingComputer and
-                   The Hacker News (retrying with backoff on failure).
+  1. INGEST      - Pull 17 RSS/Atom feeds spanning government advisories
+                   (CISA, UK NCSC), security media (BleepingComputer, The
+                   Hacker News, Dark Reading, SecurityWeek, KrebsOnSecurity),
+                   vendor/threat research (Talos, Unit 42, Securelist,
+                   Microsoft, Project Zero), exploit trackers (Exploit-DB,
+                   SANS ISC) and infosec researcher feeds on the Fediverse.
+                   Each feed is fetched with retry + backoff on failure.
   2. NORMALIZE   - Strip HTML to plain text, clamp publication dates,
                    canonicalize URLs.
   3. DEDUPLICATE - Skip anything already recorded in scripts/state.json,
@@ -64,9 +69,32 @@ POSTS_DIR = ROOT / "_posts"
 STATE_FILE = ROOT / "scripts" / "state.json"
 
 FEEDS = {
+    # 1. Government Advisories & CSIRTs (High Confidence)
     "CISA": "https://www.cisa.gov/cybersecurity-advisories/all.xml",
+    "UK NCSC": "https://www.ncsc.gov.uk/api/1/services/v1/report-rss-feed.xml",
+
+    # 2. Breaking Cybersecurity News & Journalism
     "BleepingComputer": "https://www.bleepingcomputer.com/feed/",
     "The Hacker News": "https://feeds.feedburner.com/TheHackersNews",
+    "Dark Reading": "https://www.darkreading.com/rss.xml",
+    "SecurityWeek": "https://www.securityweek.com/feed/",
+    "KrebsOnSecurity": "https://krebsonsecurity.com/feed/",
+
+    # 3. Threat Intelligence, Malware & Vendor Research
+    "Talos Intelligence": "https://blog.talosintelligence.com/rss/",
+    "Unit 42": "https://unit42.paloaltonetworks.com/feed/",
+    "Securelist": "https://securelist.com/feed/",
+    "Microsoft Security": "https://www.microsoft.com/en-us/security/blog/feed/",
+    "Project Zero": "https://googleprojectzero.blogspot.com/feeds/posts/default",
+
+    # 4. Vulnerabilities, Exploits & Incident Handlers
+    "Exploit-DB": "https://www.exploit-db.com/rss.xml",
+    "SANS ISC": "https://isc.sans.edu/rssfeed.xml",
+
+    # 5. Open-Source Social & Fediverse (Threat Researchers)
+    "@GossiTheDog": "https://infosec.exchange/@GossiTheDog.rss",
+    "@MalwareTech": "https://infosec.exchange/@MalwareTech.rss",
+    "@SwiftOnSecurity": "https://infosec.exchange/@SwiftOnSecurity.rss",
 }
 
 USER_AGENT = (
@@ -126,6 +154,13 @@ SOURCE_DOMAINS = {
     "github.io", "github.com", "twitter.com", "x.com", "t.co",
     "reddit.com", "cloudflare.com", "akamai.com", "mitre.org",
     "nist.gov", "nvd.nist.gov",
+    # Expanded source network (group 1-5)
+    "ncsc.gov.uk", "darkreading.com", "securityweek.com",
+    "krebsonsecurity.com", "talosintelligence.com", "cisco.com",
+    "paloaltonetworks.com", "unit42.paloaltonetworks.com",
+    "securelist.com", "microsoft.com", "msrc-blog.microsoft.com",
+    "blogspot.com", "blog.google", "exploit-db.com",
+    "sans.edu", "isc.sans.edu", "infosec.exchange",
 }
 
 TAG_VOCAB = {
