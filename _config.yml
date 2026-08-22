@@ -3,7 +3,11 @@
 #  Live at https://www.cyberpent.cc.cd/radar/
 # =============================================================
 
-title: Soumen Mridha - Cybersecurity Portfolio
+title: Cyberpent Radar
+description: >-
+  Cyberpent Radar — automated cybersecurity threat intelligence.
+  CVE alerts, ransomware tracking, malware campaigns and breach reports,
+  ingested from CISA, CERT advisories and trusted security media every 2 hours.
 url: "https://www.cyberpent.cc.cd"
 baseurl: ""
 lang: en
