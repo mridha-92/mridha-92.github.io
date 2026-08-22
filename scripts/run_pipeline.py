@@ -197,6 +197,17 @@ HIGH_SIGNALS = (
     "backdoor", "supply chain",
 )
 
+# Ransomware coverage often names the gang or describes extortion tactics
+# without ever using the word "ransomware".
+RANSOMWARE_SIGNALS = (
+    "ransomware", "lockbit", "blackcat", "alphv", "cl0p", "cl0p^_-",
+    "akira", "qilin", "medusa", "ransomhub", "bianlian", "8base",
+    "rhysida", "hunters international", "black basta", "play crew",
+    "inc ransom", "lynx", "dragonforce", "ransom demand", "ransom note",
+    "double extortion", "data extortion", "leak site", "leaked victims",
+    "decryptor", "encrypted files",
+)
+
 SYSTEM_PROMPT = """You are the automated senior threat-intelligence analyst \
 for Cyberpent (cyberpent.cc.cd), a cybersecurity news service.
 
@@ -465,7 +476,7 @@ def derive_categories(text_lower: str, cves: List[str]) -> List[str]:
     if cves or "vulnerab" in text_lower or "zero-day" in text_lower \
             or "exploit" in text_lower:
         cats.insert(0, "cve")
-    if "ransomware" in text_lower:
+    if any(signal in text_lower for signal in RANSOMWARE_SIGNALS):
         cats.append("ransomware")
     return uniq(cats)
 
