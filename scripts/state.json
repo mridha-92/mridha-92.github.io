@@ -3,6 +3,7 @@
   "https://thehackernews.com/2026/08/android-car-malware-spreads-through.html",
   "https://thehackernews.com/2026/08/cisco-patches-nine-crosswork-and-secure.html",
   "https://thehackernews.com/2026/08/microsoft-defenders-own-driver-can-be.html",
+  "https://unit42.paloaltonetworks.com/sdlc-supply-chain",
   "https://www.bleepingcomputer.com/news/microsoft/microsoft-warns-of-max-severity-entra-id-flaw-exploited-in-attacks",
   "https://www.bleepingcomputer.com/news/security/cisa-orders-feds-to-patch-actively-exploited-trueconf-server-flaws",
   "https://www.bleepingcomputer.com/news/security/hackers-abuse-ftp-server-banners-to-deliver-new-windows-malware",
@@ -10,5 +11,10 @@
   "https://www.bleepingcomputer.com/news/security/is-online-privacy-possible-how-digital-identities-can-help",
   "https://www.bleepingcomputer.com/news/security/new-synkloader-malware-pushed-in-microsoft-teams-phishing-campaign",
   "https://www.bleepingcomputer.com/news/security/sickkids-data-breach-exposes-employee-and-job-applicant-info",
-  "https://www.cisa.gov/news-events/alerts/2026/08/21/cisa-adds-one-known-exploited-vulnerability-catalog"
+  "https://www.cisa.gov/news-events/alerts/2026/08/21/cisa-adds-one-known-exploited-vulnerability-catalog",
+  "https://www.securityweek.com/banking-trojans-manic-grandoreiro-toxicpanda-2-0-in-the-spotlight",
+  "https://www.securityweek.com/critical-isolated-vm-vulnerability-leads-to-rce-on-host",
+  "https://www.securityweek.com/in-other-news-zombie-card-attack-t-mobile-cut-cable-to-stop-hackers-github-denies-ai-caused-bug",
+  "https://www.securityweek.com/new-phishing-toolkit-uses-passkeys-to-maintain-access-after-password-resets",
+  "https://www.securityweek.com/rust-supply-chain-attack-linked-to-north-korean-hackers"
 ]
