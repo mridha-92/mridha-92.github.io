@@ -42,7 +42,7 @@ jobs:
       - name: Run intelligence pipeline
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: gemini-2.5-flash
+          GEMINI_MODEL: gemini-3.6-flash
           MAX_POSTS_PER_RUN: "6"
           FEED_LOOKBACK_HOURS: "48"
         run: python scripts/run_pipeline.py

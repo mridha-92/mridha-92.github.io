@@ -77,7 +77,7 @@ FETCH_TIMEOUT = 30          # seconds per HTTP request
 MAX_RETRIES = 3             # attempts per feed
 RETRY_BACKOFF_SECONDS = 5   # multiplied by attempt number
 
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
 MAX_POSTS_PER_RUN = int(os.getenv("MAX_POSTS_PER_RUN", "6"))
 LOOKBACK_HOURS = int(os.getenv("FEED_LOOKBACK_HOURS", "48"))
 MAX_CONTENT_CHARS = 6000    # article text handed to the LLM
@@ -545,7 +545,7 @@ def synthesize_report(entry: EnrichedEntry, api_key: str) -> str:
     config_kwargs = {
         "system_instruction": SYSTEM_PROMPT,
         "temperature": 0.2,
-        "max_output_tokens": 2400,
+        "max_output_tokens": 3000,
     }
     # Thinking tokens consume the output budget and add latency; disable them
     # for Gemini 2.5 Flash-class models where they are optional.
