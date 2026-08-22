@@ -24,10 +24,11 @@ Serverless ingestion engine designed to run inside GitHub Actions every
                    scripts/state.json.
 
 Required environment:
-    OPENAI_API_KEY   OpenAI API key stored as a GitHub Actions secret.
+    GEMINI_API_KEY   Google AI Studio API key (aistudio.google.com/apikey)
+                     stored as a GitHub Actions secret.
 
 Optional environment:
-    OPENAI_MODEL         (default: gpt-4o-mini)
+    GEMINI_MODEL         (default: gemini-2.5-flash)
     MAX_POSTS_PER_RUN    (default: 6)
     FEED_LOOKBACK_HOURS  (default: 48)
 
@@ -50,7 +51,8 @@ from typing import List, Optional, Set, Tuple
 import feedparser
 import frontmatter
 import requests
-from openai import OpenAI
+from google import genai
+from google.genai import types as genai_types
 from pydantic import BaseModel, Field
 
 # --------------------------------------------------------------------------- #
@@ -75,7 +77,7 @@ FETCH_TIMEOUT = 30          # seconds per HTTP request
 MAX_RETRIES = 3             # attempts per feed
 RETRY_BACKOFF_SECONDS = 5   # multiplied by attempt number
 
-OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 MAX_POSTS_PER_RUN = int(os.getenv("MAX_POSTS_PER_RUN", "6"))
 LOOKBACK_HOURS = int(os.getenv("FEED_LOOKBACK_HOURS", "48"))
 MAX_CONTENT_CHARS = 6000    # article text handed to the LLM
@@ -538,19 +540,28 @@ def finalize_body(body: str, entry: EnrichedEntry) -> str:
 
 
 def synthesize_report(entry: EnrichedEntry, api_key: str) -> str:
-    client = OpenAI(api_key=api_key)
-    response = client.chat.completions.create(
-        model=OPENAI_MODEL,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": build_user_prompt(entry)},
-        ],
-        temperature=0.2,
-        max_tokens=1400,
+    client = genai.Client(api_key=api_key)
+
+    config_kwargs = {
+        "system_instruction": SYSTEM_PROMPT,
+        "temperature": 0.2,
+        "max_output_tokens": 2400,
+    }
+    # Thinking tokens consume the output budget and add latency; disable them
+    # for Gemini 2.5 Flash-class models where they are optional.
+    if "2.5" in GEMINI_MODEL:
+        config_kwargs["thinking_config"] = genai_types.ThinkingConfig(
+            thinking_budget=0
+        )
+
+    response = client.models.generate_content(
+        model=GEMINI_MODEL,
+        contents=build_user_prompt(entry),
+        config=genai_types.GenerateContentConfig(**config_kwargs),
     )
-    content = response.choices[0].message.content or ""
+    content = response.text or ""
     if not content.strip():
-        raise RuntimeError("OpenAI returned an empty completion")
+        raise RuntimeError("Gemini returned an empty completion")
     return finalize_body(content, entry)
 
 
@@ -600,10 +611,11 @@ def write_post(entry: EnrichedEntry, body: str) -> Path:
 
 
 def main() -> int:
-    api_key = os.getenv("OPENAI_API_KEY", "").strip()
+    api_key = os.getenv("GEMINI_API_KEY", "").strip()
     if not api_key:
-        log.error("OPENAI_API_KEY is not set. Add it via repo Settings -> "
-                  "Secrets and variables -> Actions -> Repository secrets.")
+        log.error("GEMINI_API_KEY is not set. Get a free key at "
+                  "https://aistudio.google.com/apikey and add it via repo "
+                  "Settings -> Secrets and variables -> Actions.")
         return 1
 
     cutoff = datetime.now(timezone.utc) - timedelta(hours=LOOKBACK_HOURS)

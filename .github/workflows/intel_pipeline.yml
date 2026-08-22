@@ -1,6 +1,6 @@
 # =====================================================================
 #  Cyberpent Radar - Threat Intel Pipeline
-#  Ingests feeds -> extracts CVE/IOCs -> synthesizes via OpenAI ->
+#  Ingests feeds -> extracts CVE/IOCs -> synthesizes via Gemini ->
 #  commits radar reports every 2h. Site rebuilds automatically.
 # =====================================================================
 
@@ -41,8 +41,8 @@ jobs:
 
       - name: Run intelligence pipeline
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: gpt-4o-mini
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: gemini-2.5-flash
           MAX_POSTS_PER_RUN: "6"
           FEED_LOOKBACK_HOURS: "48"
         run: python scripts/run_pipeline.py
