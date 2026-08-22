@@ -4,7 +4,7 @@ title: "Live Threat Intelligence Feed"
 description: "Automated cybersecurity threat intelligence — CVE alerts, ransomware tracking and breach reports refreshed every 2 hours."
 ---
 
-<section class="hero">
+<section class="hero" data-tilt="2.5">
   <p class="terminal-line"><span class="prompt">$</span> tail -f /var/log/world.threats<span class="cursor">&#9612;</span></p>
   <h1 class="hero-title">Cyberpent Radar</h1>
   <p class="hero-sub">
@@ -26,7 +26,7 @@ description: "Automated cybersecurity threat intelligence — CVE alerts, ransom
 
 <div id="radar-feed" class="feed-grid">
   {% for post in site.posts limit: 60 %}
-  <article class="card"
+  <article class="card" data-tilt="7"
            data-cats="{{ post.categories | join: ' ' | downcase }}"
            data-tags="{{ post.tags | join: ' ' | downcase }}"
            data-title="{{ post.title | downcase | escape }}"
