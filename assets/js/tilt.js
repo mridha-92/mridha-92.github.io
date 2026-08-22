@@ -12,7 +12,7 @@
   var motionOK = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!hoverCapable.matches || !motionOK) { return; }
 
-  var EASE = 0.12;          // lerp factor per frame (lower = heavier feel)
+  var EASE = 0.08;          // lerp factor per frame (lower = heavier feel)
   var SETTLE_EPS = 0.02;    // degrees; below this we snap and stop looping
 
   var items = [];

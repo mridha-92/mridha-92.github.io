@@ -26,7 +26,7 @@ description: "Automated cybersecurity threat intelligence — CVE alerts, ransom
 
 <div id="radar-feed" class="feed-grid">
   {% for post in site.posts limit: 60 %}
-  <article class="card" data-tilt="7"
+  <article class="card" data-tilt="9"
            data-cats="{{ post.categories | join: ' ' | downcase }}"
            data-tags="{{ post.tags | join: ' ' | downcase }}"
            data-title="{{ post.title | downcase | escape }}"
