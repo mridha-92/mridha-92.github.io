@@ -583,7 +583,7 @@ def write_post(entry: EnrichedEntry, body: str) -> Path:
 
     post = frontmatter.Post(
         body,
-        layout="post",
+        layout="radar_post",
         title=entry.title,
         date=entry.published.isoformat(),
         categories=entry.categories,

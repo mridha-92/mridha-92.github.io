@@ -9,7 +9,7 @@ iocs:
   domains: []
   hashes: []
   ips: []
-layout: post
+layout: radar_post
 severity: low
 source: The Hacker News
 source_url: https://thehackernews.com/2026/08/cisco-patches-nine-crosswork-and-secure.html

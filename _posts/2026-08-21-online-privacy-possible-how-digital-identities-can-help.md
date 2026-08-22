@@ -8,7 +8,7 @@ iocs:
   domains: []
   hashes: []
   ips: []
-layout: post
+layout: radar_post
 severity: low
 source: BleepingComputer
 source_url: https://www.bleepingcomputer.com/news/security/is-online-privacy-possible-how-digital-identities-can-help

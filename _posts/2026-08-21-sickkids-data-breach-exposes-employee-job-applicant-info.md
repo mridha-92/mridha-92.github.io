@@ -8,7 +8,7 @@ iocs:
   domains: []
   hashes: []
   ips: []
-layout: post
+layout: radar_post
 severity: medium
 source: BleepingComputer
 source_url: https://www.bleepingcomputer.com/news/security/sickkids-data-breach-exposes-employee-and-job-applicant-info

@@ -9,7 +9,7 @@ iocs:
   domains: []
   hashes: []
   ips: []
-layout: post
+layout: radar_post
 severity: medium
 source: BleepingComputer
 source_url: https://www.bleepingcomputer.com/news/microsoft/microsoft-warns-of-max-severity-entra-id-flaw-exploited-in-attacks
