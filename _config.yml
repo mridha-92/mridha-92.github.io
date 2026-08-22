@@ -22,12 +22,9 @@ kramdown:
 future: false
 
 # Plugins whitelisted by GitHub Pages
+# NOTE: jekyll-feed intentionally omitted - no public RSS exposure.
 plugins:
-  - jekyll-feed
   - jekyll-seo-tag
-
-feed:
-  path: feed.xml
 
 # Radar reports only; portfolio HTML pages are plain static files.
 defaults:
