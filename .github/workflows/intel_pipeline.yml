@@ -52,7 +52,8 @@ jobs:
           git config user.name  "Cyberpent Bot"
           git config user.email "bot@cyberpent.cc.cd"
 
-          git add _posts scripts/state.json
+          mkdir -p _posts
+          git add -A _posts scripts/state.json
 
           if git diff --cached --quiet; then
             echo "::notice::No new intelligence to publish this cycle."
