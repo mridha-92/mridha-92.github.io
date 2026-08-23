@@ -104,6 +104,17 @@ FEEDS = {
     # 7. Telegram Channels (web-preview scraper)
     # (handled by fetch_telegram below - see TELEGRAM_CHANNELS)
 
+    # 8. Aggregated News Search (Google News RSS - pre-filtered queries)
+    "Google News Attacks": (
+        "https://news.google.com/rss/search?q="
+        "ransomware+OR+%22data+breach%22+OR+%22cyber+attack%22"
+        "&hl=en-US&gl=US&ceid=US:en"
+    ),
+    "Google News Vulns": (
+        "https://news.google.com/rss/search?q="
+        "%22zero-day%22+OR+CVE+OR+%22security+flaw%22+when:2d"
+        "&hl=en-US&gl=US&ceid=US:en"
+    ),
 }
 
 # Telegram channels scraped from the public t.me/s/ web preview.
