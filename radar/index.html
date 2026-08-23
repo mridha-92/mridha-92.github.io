@@ -35,7 +35,7 @@ description: "Automated cybersecurity threat intelligence — CVE alerts, ransom
       {% assign sev = post.severity | default: "medium" %}
       <span class="badge sev-{{ sev }}">{{ sev | upcase }}</span>
       <time datetime="{{ post.date | date_to_xmlschema }}">
-        {{ post.date | date: "%Y-%m-%d %H:%M UTC" }}
+        {{ post.date | date: "%Y-%m-%d %H:%M IST" }}
       </time>
     </header>
     <h2 class="card-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h2>

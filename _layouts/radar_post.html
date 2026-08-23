@@ -20,7 +20,7 @@ layout: radar_default
       <a class="chip chip-cat" href="{{ '/radar/' | relative_url }}">{{ category }}</a>
       {% endfor %}
       <time datetime="{{ page.date | date_to_xmlschema }}">
-        {{ page.date | date: "%Y-%m-%d %H:%M UTC" }}
+        {{ page.date | date: "%Y-%m-%d %H:%M IST" }}
       </time>
       {% if page.source %}
       &middot; via <a href="{{ page.source_url }}" rel="noopener nofollow" target="_blank">{{ page.source }}</a>

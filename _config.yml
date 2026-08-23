@@ -11,7 +11,7 @@ description: >-
 url: "https://www.cyberpent.cc.cd"
 baseurl: ""
 lang: en
-timezone: Etc/UTC
+timezone: Asia/Kolkata
 
 permalink: /radar/:year/:month/:day/:title.html
 markdown: kramdown
