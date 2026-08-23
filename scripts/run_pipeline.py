@@ -95,6 +95,27 @@ FEEDS = {
     "@GossiTheDog": "https://infosec.exchange/@GossiTheDog.rss",
     "@MalwareTech": "https://infosec.exchange/@MalwareTech.rss",
     "@SwiftOnSecurity": "https://infosec.exchange/@SwiftOnSecurity.rss",
+
+    # 6. Community Aggregators (Reddit)
+    "Reddit CyberSec": "https://www.reddit.com/r/cybersecurity/new/.rss",
+    "Reddit Malware": "https://www.reddit.com/r/Malware/new/.rss",
+    "Reddit BlueTeam": "https://www.reddit.com/r/blueteamsec/new/.rss",
+
+    # 7. Telegram Channels (web-preview scraper)
+    # (handled by fetch_telegram below - see TELEGRAM_CHANNELS)
+
+}
+
+# Telegram channels scraped from the public t.me/s/ web preview.
+TELEGRAM_CHANNELS = {
+    "TG VXUnderground": "vxunderground",
+}
+
+# Bluesky researcher accounts (free public API - no auth needed).
+BSKY_ACCOUNTS = {
+    "deepdarkCTI Bluesky": "fastfire.bsky.social",
+    "Perimetered TI Bluesky": "sen-perimetered.bsky.social",
+    "r1cksec Bluesky": "r1cksec.bsky.social",
 }
 
 USER_AGENT = (
@@ -446,6 +467,95 @@ def fetch_feed(name: str, url: str) -> List[RawEntry]:
     return []
 
 
+def fetch_bluesky(name: str, handle: str) -> List[RawEntry]:
+    """Pull recent posts from a Bluesky account via the public AppView API."""
+    url = ("https://public.api.bsky.app/xrpc/app.bsky.feed.getAuthorFeed"
+           f"?actor={handle}&limit=15")
+    try:
+        resp = requests.get(url, timeout=FETCH_TIMEOUT)
+        resp.raise_for_status()
+        entries: List[RawEntry] = []
+        for item in resp.json().get("feed", []):
+            post = item.get("post", {})
+            record = post.get("record", {})
+            text = (record.get("text") or "").strip()
+            uri = post.get("uri", "")
+            if not text or not uri.startswith("at://"):
+                continue
+            rkey = uri.rsplit("/", 1)[-1]
+            author_did = uri.split("/")[2]
+            link = normalize_url(
+                f"https://bsky.app/profile/{author_did}/post/{rkey}"
+            )
+            created = record.get("createdAt") or post.get("indexedAt") or ""
+            try:
+                published = datetime.fromisoformat(
+                    created.replace("Z", "+00:00"))
+            except ValueError:
+                published = datetime.now(timezone.utc)
+            first_line = text.splitlines()[0][:90]
+            entries.append(
+                RawEntry(
+                    source=name,
+                    title=first_line,
+                    url=link,
+                    summary=text[:1500],
+                    published=published,
+                )
+            )
+        log.info("%-18s fetched %2d posts", name, len(entries))
+        return entries
+    except Exception as exc:  # noqa: BLE001 - degrade like any other feed
+        log.warning("%s: fetch failed (%s)", name, exc)
+        return []
+
+
+def fetch_telegram(name: str, channel: str) -> List[RawEntry]:
+    """Scrape a public Telegram channel via its t.me/s/ web preview."""
+    url = f"https://t.me/s/{channel}"
+    try:
+        resp = requests.get(
+            url,
+            headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64)"},
+            timeout=FETCH_TIMEOUT,
+        )
+        resp.raise_for_status()
+        html = resp.text
+        entries: List[RawEntry] = []
+        segments = html.split('class="tgme_widget_message ')
+        for seg in segments[1:]:
+            id_match = re.search(r'data-post="' + channel + r'/(\d+)"', seg)
+            time_match = re.search(r'<time[^>]+datetime="([^"]+)"', seg)
+            text_match = re.search(
+                r'class="tgme_widget_message_text[^"]*"[^>]*>(.*?)<time',
+                seg, re.DOTALL)
+            if not (id_match and time_match):
+                continue
+            try:
+                published = datetime.fromisoformat(
+                    time_match.group(1).replace("Z", "+00:00"))
+            except ValueError:
+                continue
+            body = strip_html(text_match.group(1)) if text_match else ""
+            if not body:
+                continue
+            link = normalize_url(f"https://t.me/{channel}/{id_match.group(1)}")
+            entries.append(
+                RawEntry(
+                    source=name,
+                    title=body.splitlines()[0][:90],
+                    url=link,
+                    summary=body[:1500],
+                    published=published,
+                )
+            )
+        log.info("%-18s fetched %2d posts", name, len(entries))
+        return entries
+    except Exception as exc:  # noqa: BLE001 - degrade like any other feed
+        log.warning("%s: fetch failed (%s)", name, exc)
+        return []
+
+
 # --------------------------------------------------------------------------- #
 # Enrichment
 # --------------------------------------------------------------------------- #
@@ -675,6 +785,16 @@ def main() -> int:
     seen_this_run: Set[str] = set()
     for name, url in FEEDS.items():
         for entry in fetch_feed(name, url):
+            if entry.url not in seen_this_run:
+                seen_this_run.add(entry.url)
+                raw_entries.append(entry)
+    for name, handle in BSKY_ACCOUNTS.items():
+        for entry in fetch_bluesky(name, handle):
+            if entry.url not in seen_this_run:
+                seen_this_run.add(entry.url)
+                raw_entries.append(entry)
+    for name, channel in TELEGRAM_CHANNELS.items():
+        for entry in fetch_telegram(name, channel):
             if entry.url not in seen_this_run:
                 seen_this_run.add(entry.url)
                 raw_entries.append(entry)
