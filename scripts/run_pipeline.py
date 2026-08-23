@@ -139,12 +139,13 @@ URL_RE = re.compile(r"https?://[^\s<>\"')\]]+", re.IGNORECASE)
 
 # An item must mention at least one of these (case-insensitive) to qualify.
 RELEVANCE_KEYWORDS = (
-    "cve-", "vulnerab", "zero-day", "zeroday", "exploit", "ransomware",
-    "malware", "breach", "backdoor", "botnet", "phishing", "credential",
-    "apt ", "threat actor", "data leak", "cyber attack", "cyberattack",
-    "patch now", "actively exploited", "in the wild", "infostealer",
-    "spyware", "rootkit", "trojan", "ddos", "supply chain", "hacked",
-    "hackers", "security flaw",
+    "cve-", "vulnerab", "zero-day", "zeroday", "zero day", "exploit",
+    "ransomware", "malware", "breach", "backdoor", "botnet", "phishing",
+    "credential", "apt ", "threat actor", "data leak", "leak", "cyber attack",
+    "cyberattack", "patch now", "actively exploited", "in the wild",
+    "infostealer", "spyware", "rootkit", "trojan", "ddos", "supply chain",
+    "hacked", "hackers", "hack", "security flaw", "flaw", "attack",
+    "extortion", "dark web",
 )
 
 # Never report these as IOCs - they are our own sources / big platforms.
