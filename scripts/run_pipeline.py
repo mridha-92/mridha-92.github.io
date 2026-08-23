@@ -247,6 +247,16 @@ RANSOMWARE_SIGNALS = (
     "decryptor", "encrypted files",
 )
 
+# Industrial / OT (ICS-SCADA) signals -> "ot-security" category.
+OT_SIGNALS = (
+    "scada", "modbus", "dnp3", "s7comm", "opc ua", "ethercat",
+    "hmi", "plc ", "plcs", " plc,", "industrial control", "ics-cert",
+    "ics advisory", "icsa-", "operational technology", "ot security",
+    "ot environment", "critical infrastructure", "power grid", "substation",
+    "water utility", "water treatment", "energy facility", "field device",
+    "engineering workstation", "rtu",
+)
+
 SYSTEM_PROMPT = """You are the automated senior threat-intelligence analyst \
 for Cyberpent (cyberpent.cc.cd), a cybersecurity news service.
 
@@ -606,6 +616,8 @@ def derive_categories(text_lower: str, cves: List[str]) -> List[str]:
         cats.insert(0, "cve")
     if any(signal in text_lower for signal in RANSOMWARE_SIGNALS):
         cats.append("ransomware")
+    if any(signal in text_lower for signal in OT_SIGNALS):
+        cats.append("ot-security")
     return uniq(cats)
 
 
