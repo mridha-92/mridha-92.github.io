@@ -698,6 +698,7 @@ def main() -> int:
 
     # ---- 3. Synthesize & publish -------------------------------------------
     published = 0
+    linkedin_queue: List[dict] = []
     for entry in candidates:
         enriched = enrich(entry)
 
@@ -714,14 +715,30 @@ def main() -> int:
                       enriched.title, exc)
             continue
 
-        write_post(enriched, body)
+        path = write_post(enriched, body)
         state.add(enriched.url)
         recent_slugs.append(slug_words)
         published += 1
+        linkedin_queue.append({
+            "title": enriched.title,
+            "severity": enriched.severity,
+            "confidence": enriched.confidence,
+            "source": enriched.source,
+            "cves": enriched.cves,
+            "stem": path.name,
+        })
         time.sleep(LLM_THROTTLE_SECONDS)
 
     # ---- 4. Persist --------------------------------------------------------
     save_state(state)
+    if linkedin_queue:
+        try:
+            from linkedin_publish import share_all
+            shared = share_all(linkedin_queue)
+            log.info("LinkedIn: %d/%d report(s) shared.", shared,
+                     len(linkedin_queue))
+        except Exception as exc:  # noqa: BLE001 - never block the radar
+            log.error("LinkedIn sharing skipped: %s", exc)
     log.info("Run complete - %d new report(s) published.", published)
     return 0
 

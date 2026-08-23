@@ -45,6 +45,10 @@ jobs:
           GEMINI_MODEL: gemini-3.6-flash
           MAX_POSTS_PER_RUN: "6"
           FEED_LOOKBACK_HOURS: "48"
+          LINKEDIN_CLIENT_ID: ${{ secrets.LINKEDIN_CLIENT_ID }}
+          LINKEDIN_CLIENT_SECRET: ${{ secrets.LINKEDIN_CLIENT_SECRET }}
+          LINKEDIN_REFRESH_TOKEN: ${{ secrets.LINKEDIN_REFRESH_TOKEN }}
+          LINKEDIN_ORG_URN: ${{ secrets.LINKEDIN_ORG_URN }}
         run: python scripts/run_pipeline.py
 
       - name: Commit and push new radar reports
