@@ -1,0 +1,142 @@
+---
+layout: radar_default
+title: "Radar Archive"
+description: "Browse all Cyberpent Radar threat intelligence reports by date."
+---
+
+<section class="hero" data-tilt="2.5">
+  <div class="radar-viz" aria-hidden="true">
+    <canvas id="radar-viz-canvas"></canvas>
+  </div>
+  <p class="terminal-line"><span class="prompt">$</span> find /var/log/world.threats -type f -mtime -90<span class="cursor">&#9612;</span></p>
+  <h1 class="hero-title">Radar Archive</h1>
+  <p class="hero-sub">
+    All threat intelligence reports, organized by date. Use the search or
+    jump to a specific month below.
+  </p>
+</section>
+
+<div class="toolbar">
+  <input id="archive-search" type="search" placeholder="Search title, CVE, tag&hellip;"
+         aria-label="Search archive" autocomplete="off">
+  <div class="filter-chips" role="group" aria-label="Category filter">
+    <button type="button" class="chip-btn active" data-filter="all">All</button>
+    <button type="button" class="chip-btn" data-filter="cve">CVE</button>
+    <button type="button" class="chip-btn" data-filter="ransomware">Ransomware</button>
+    <button type="button" class="chip-btn" data-filter="ot-security">OT&nbsp;/&nbsp;Industrial</button>
+    <button type="button" class="chip-btn" data-filter="threat-intel">Threat&nbsp;Intel</button>
+  </div>
+  <span id="archive-count" class="radar-count"></span>
+</div>
+
+<nav id="month-nav" class="month-nav" aria-label="Jump to month"></nav>
+
+<div id="archive-feed">
+  {% assign months = "" | split: "" %}
+  {% assign current_month = "" %}
+  {% for post in site.posts %}
+    {% assign post_month = post.date | date: "%Y-%m" %}
+    {% if post_month != current_month %}
+      {% assign current_month = post_month %}
+      <div class="archive-month" data-month="{{ post_month }}">
+        <h2 class="month-heading">{{ post.date | date: "%B %Y" }}</h2>
+        <div class="month-posts">
+    {% endif %}
+          <article class="archive-card"
+                   data-cats="{{ post.categories | join: ' ' | downcase }}"
+                   data-tags="{{ post.tags | join: ' ' | downcase }}"
+                   data-title="{{ post.title | downcase | escape }}"
+                   data-cves="{% for c in post.cves %}{{ c | downcase }} {% endfor %}"
+                   data-date="{{ post.date | date: '%Y-%m-%d' }}">
+            <div class="archive-card-inner">
+              {% assign sev = post.severity | default: "medium" %}
+              <span class="badge sev-{{ sev }}">{{ sev | upcase }}</span>
+              <time datetime="{{ post.date | date_to_xmlschema }}">
+                {{ post.date | date: "%b %d, %H:%M" }}
+              </time>
+              <h3 class="archive-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+              <div class="archive-chips">
+                {% for category in post.categories %}<span class="chip chip-cat">{{ category }}</span>{% endfor %}
+                {% for cve in post.cves limit: 3 %}
+                <a class="chip chip-cve" rel="noopener" target="_blank"
+                   href="https://nvd.nist.gov/vuln/detail/{{ cve }}">{{ cve }}</a>
+                {% endfor %}
+              </div>
+            </div>
+          </article>
+    {% assign next_index = forloop.index %}
+    {% assign total_posts = site.posts | size %}
+    {% if next_index == total_posts %}
+        </div>
+      </div>
+    {% else %}
+      {% assign next_post = site.posts[forloop.index] %}
+      {% assign next_month = next_post.date | date: "%Y-%m" %}
+      {% if next_month != current_month %}
+        </div>
+      </div>
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+</div>
+
+<p id="archive-empty" class="empty-state" hidden>[!] No reports match the current filter.</p>
+
+<script>
+(function () {
+  var box      = document.getElementById('archive-search');
+  var chips    = Array.prototype.slice.call(document.querySelectorAll('.chip-btn'));
+  var cards    = Array.prototype.slice.call(document.querySelectorAll('.archive-card'));
+  var months   = Array.prototype.slice.call(document.querySelectorAll('.archive-month'));
+  var monthNav = document.getElementById('month-nav');
+  var empty    = document.getElementById('archive-empty');
+  var countEl  = document.getElementById('archive-count');
+  var cat      = 'all';
+
+  var monthMap = {};
+  months.forEach(function (m) { monthMap[m.dataset.month] = m; });
+
+  var monthOrder = Object.keys(monthMap).sort().reverse();
+
+  var navHtml = '';
+  monthOrder.forEach(function (m) {
+    var label = new Date(m + '-15').toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+    navHtml += '<a class="month-link" href="#month-' + m + '">' + label + '</a>';
+  });
+  monthNav.innerHTML = navHtml;
+
+  function apply() {
+    var q = box.value.trim().toLowerCase();
+    var visible = 0;
+
+    cards.forEach(function (card) {
+      var catsOk = cat === 'all' ||
+                   (' ' + card.dataset.cats + ' ').indexOf(' ' + cat + ' ') !== -1;
+      var hay = (card.dataset.title + ' ' + card.dataset.tags + ' ' + card.dataset.cves).toLowerCase();
+      var show = catsOk && (!q || hay.indexOf(q) !== -1);
+      card.style.display = show ? '' : 'none';
+      if (show) { visible++; }
+    });
+
+    months.forEach(function (m) {
+      var hasVisible = m.querySelector('.archive-card:not([style*="display: none"])');
+      m.style.display = hasVisible ? '' : 'none';
+    });
+
+    countEl.textContent = visible + ' report' + (visible !== 1 ? 's' : '');
+    empty.hidden = visible !== 0;
+  }
+
+  box.addEventListener('input', apply);
+  chips.forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      chips.forEach(function (c) { c.classList.remove('active'); });
+      chip.classList.add('active');
+      cat = chip.dataset.filter;
+      apply();
+    });
+  });
+
+  apply();
+})();
+</script>
