@@ -23,13 +23,14 @@ description: "Automated cybersecurity threat intelligence — CVE alerts, ransom
     <button type="button" class="chip-btn active" data-filter="all">All</button>
     <button type="button" class="chip-btn" data-filter="cve">CVE</button>
     <button type="button" class="chip-btn" data-filter="ransomware">Ransomware</button>
-<button type="button" class="chip-btn" data-filter="ot-security">OT&nbsp;/&nbsp;Industrial</button>
+    <button type="button" class="chip-btn" data-filter="ot-security">OT&nbsp;/&nbsp;Industrial</button>
     <button type="button" class="chip-btn" data-filter="threat-intel">Threat&nbsp;Intel</button>
   </div>
+  <span id="radar-count" class="radar-count"></span>
 </div>
 
 <div id="radar-feed" class="feed-grid">
-  {% for post in site.posts limit: 60 %}
+  {% for post in site.posts %}
   <article class="card" data-tilt="9"
            data-cats="{{ post.categories | join: ' ' | downcase }}"
            data-tags="{{ post.tags | join: ' ' | downcase }}"
@@ -64,28 +65,81 @@ description: "Automated cybersecurity threat intelligence — CVE alerts, ransom
 
 <p id="radar-empty" class="empty-state" hidden>[!] No alerts match the current filter.</p>
 
+<nav id="radar-pagination" class="radar-pagination" aria-label="Pagination"></nav>
+
 <script>
 (function () {
-  var box   = document.getElementById('radar-search');
-  var chips = Array.prototype.slice.call(document.querySelectorAll('.chip-btn'));
-  var cards = Array.prototype.slice.call(document.querySelectorAll('#radar-feed .card'));
-  var empty = document.getElementById('radar-empty');
-  var cat   = 'all';
+  var PAGE_SIZE = 20;
+  var box     = document.getElementById('radar-search');
+  var chips   = Array.prototype.slice.call(document.querySelectorAll('.chip-btn'));
+  var cards   = Array.prototype.slice.call(document.querySelectorAll('#radar-feed .card'));
+  var empty   = document.getElementById('radar-empty');
+  var pagNav  = document.getElementById('radar-pagination');
+  var countEl = document.getElementById('radar-count');
+  var cat     = 'all';
+  var page    = 1;
+  var filtered = cards.slice();
 
   function apply() {
-    var q = box.value.trim().toLowerCase(), visible = 0;
+    var q = box.value.trim().toLowerCase();
+    filtered = [];
     cards.forEach(function (card) {
       var catsOk = cat === 'all' ||
                    (' ' + card.dataset.cats + ' ').indexOf(' ' + cat + ' ') !== -1;
       var hay = (card.dataset.title + ' ' + card.dataset.tags + ' ' + card.dataset.cves).toLowerCase();
       var show = catsOk && (!q || hay.indexOf(q) !== -1);
-      card.style.display = show ? '' : 'none';
-      if (show) { visible++; }
+      card.style.display = 'none';
+      if (show) { filtered.push(card); }
     });
-    if (cards.length) { empty.hidden = visible !== 0; }
+
+    page = 1;
+    render();
   }
 
-  box.addEventListener('input', apply);
+  function render() {
+    var total = filtered.length;
+    var pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    if (page > pages) { page = pages; }
+    var start = (page - 1) * PAGE_SIZE;
+    var end   = start + PAGE_SIZE;
+
+    filtered.forEach(function (card, i) {
+      card.style.display = (i >= start && i < end) ? '' : 'none';
+    });
+
+    countEl.textContent = total + ' report' + (total !== 1 ? 's' : '');
+    empty.hidden = total !== 0;
+
+    if (pages <= 1) { pagNav.innerHTML = ''; return; }
+
+    var html = '';
+    html += '<button class="pag-btn" data-page="1" ' + (page === 1 ? 'disabled' : '') + '>&laquo;</button>';
+    html += '<button class="pag-btn" data-page="' + (page - 1) + '" ' + (page === 1 ? 'disabled' : '') + '>&lsaquo;</button>';
+
+    var range = 2;
+    var pLow = Math.max(1, page - range);
+    var pHigh = Math.min(pages, page + range);
+    if (pLow > 1) { html += '<span class="pag-ellipsis">&hellip;</span>'; }
+    for (var i = pLow; i <= pHigh; i++) {
+      html += '<button class="pag-btn' + (i === page ? ' active' : '') + '" data-page="' + i + '">' + i + '</button>';
+    }
+    if (pHigh < pages) { html += '<span class="pag-ellipsis">&hellip;</span>'; }
+
+    html += '<button class="pag-btn" data-page="' + (page + 1) + '" ' + (page === pages ? 'disabled' : '') + '>&rsaquo;</button>';
+    html += '<button class="pag-btn" data-page="' + pages + '" ' + (page === pages ? 'disabled' : '') + '>&raquo;</button>';
+
+    pagNav.innerHTML = html;
+  }
+
+  pagNav.addEventListener('click', function (e) {
+    var btn = e.target.closest('.pag-btn');
+    if (!btn || btn.disabled) return;
+    page = parseInt(btn.dataset.page, 10);
+    render();
+    window.scrollTo({ top: document.getElementById('radar-feed').offsetTop - 80, behavior: 'smooth' });
+  });
+
+  box.addEventListener('input', function () { apply(); });
   chips.forEach(function (chip) {
     chip.addEventListener('click', function () {
       chips.forEach(function (c) { c.classList.remove('active'); });
@@ -94,5 +148,7 @@ description: "Automated cybersecurity threat intelligence — CVE alerts, ransom
       apply();
     });
   });
+
+  apply();
 })();
 </script>

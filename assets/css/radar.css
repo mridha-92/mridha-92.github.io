@@ -78,6 +78,15 @@ a { color: var(--cyan); text-decoration: none; } a:hover { color: var(--accent);
 
 .empty-state { font-family: ui-monospace, monospace; color: var(--yellow); text-align: center; padding: 48px 0; }
 
+.radar-count { font-family: ui-monospace, monospace; font-size: .75rem; color: var(--text-faint); margin-left: auto; white-space: nowrap; }
+
+.radar-pagination { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 24px 0 12px; flex-wrap: wrap; }
+.pag-btn { font-family: ui-monospace, monospace; font-size: .8rem; padding: 7px 13px; background: var(--bg-raised); color: var(--text-dim); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; transition: all .15s; }
+.pag-btn:hover:not(:disabled) { border-color: var(--accent-dim); color: var(--accent); }
+.pag-btn.active { background: rgba(0,255,156,.1); border-color: var(--accent); color: var(--accent); box-shadow: 0 0 10px rgba(0,255,156,.15); }
+.pag-btn:disabled { opacity: .35; cursor: not-allowed; }
+.pag-ellipsis { font-family: ui-monospace, monospace; color: var(--text-faint); padding: 0 4px; }
+
 /* ==================================================================
    INTELLIGENCE BRIEFING — report page theme
    ================================================================== */
@@ -204,6 +213,7 @@ a { color: var(--cyan); text-decoration: none; } a:hover { color: var(--accent);
   .hero { padding-top: 36px; }
   .card-meta { flex-direction: column; align-items: flex-start; }
   .toolbar { flex-direction: column; align-items: stretch; }
+  .radar-count { margin-left: 0; }
   .briefing { padding: 26px 20px; margin: 20px auto 48px; }
   .brief-nav { grid-template-columns: 1fr auto; }
 }
