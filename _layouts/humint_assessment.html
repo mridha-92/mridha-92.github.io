@@ -1,0 +1,120 @@
+---
+layout: humint_default
+---
+
+<div class="read-progress"><div id="read-fill"></div></div>
+
+<article class="briefing" data-tilt="1.5">
+  <header class="brief-head">
+    <div class="brief-topline">
+      <span class="doc-tag">/// HUMINT ASSESSMENT</span>
+      <span class="doc-id">HUM-{{ page.date | date: '%Y%m%d' }}-{{ page.title | slugify | truncate: 10, "" | upcase }}</span>
+    </div>
+
+    <h1 class="brief-title">{{ page.title }}</h1>
+
+    <div class="brief-meta">
+      {% assign sev = page.threat_level | default: "medium" %}
+      <span class="badge sev-{{ sev }}">{{ sev | upcase }} THREAT</span>
+      {% for tag in page.tags %}
+      <span class="chip chip-cat">{{ tag }}</span>
+      {% endfor %}
+      <time datetime="{{ page.date | date_to_xmlschema }}">
+        {{ page.date | date: "%Y-%m-%d %H:%M IST" }}
+      </time>
+    </div>
+
+    <div class="conf-block">
+      <span class="conf-label">ANALYST CONFIDENCE</span>
+      <div class="meter"><span style="width: {{ page.confidence | default: 50 }}%"></span></div>
+      <span class="conf-value">{{ page.confidence | default: 50 }}/100</span>
+    </div>
+  </header>
+
+  {% if page.hypotheses and page.hypotheses != empty %}
+  <section class="ioc-panel humint-panel">
+    <p class="panel-label">HYPOTHESES</p>
+    {% for hyp in page.hypotheses %}
+    <div class="hypothesis-card">
+      <div class="hyp-header">
+        <span class="hyp-id">{{ hyp.id }}</span>
+        {% assign hyp_status = hyp.status | default: "pending" %}
+        <span class="badge hyp-status-{{ hyp_status }}">{{ hyp_status | upcase }}</span>
+      </div>
+      <p class="hyp-statement">{{ hyp.statement }}</p>
+      <div class="hyp-confidence">
+        <span class="conf-label">CONFIDENCE</span>
+        <div class="meter"><span style="width: {{ hyp.confidence }}%"></span></div>
+        <span class="conf-value">{{ hyp.confidence }}%</span>
+      </div>
+      {% if hyp.supporting %}
+      <div class="hyp-evidence">
+        <span class="evidence-label">SUPPORTING: {{ hyp.supporting | size }}</span>
+        {% for ev in hyp.supporting %}
+        <span class="chip chip-evidence">{{ ev }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if hyp.contradictions %}
+      <div class="hyp-evidence hyp-contradictions">
+        <span class="evidence-label">CONTRADICTING: {{ hyp.contradictions | size }}</span>
+        {% for ev in hyp.contradictions %}
+        <span class="chip chip-contradiction">{{ ev }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {% if page.entities and page.entities != empty %}
+  <section class="ioc-panel humint-panel">
+    <p class="panel-label">RESOLVED ENTITIES</p>
+    <div class="entity-grid">
+      {% for entity in page.entities %}
+      <div class="entity-card">
+        <span class="entity-type">{{ entity.type }}</span>
+        <span class="entity-name">{{ entity.name }}</span>
+        {% if entity.aliases %}
+        <span class="entity-aliases">{{ entity.aliases | join: ", " }}</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <div class="brief-body">
+    {{ content }}
+  </div>
+
+  {% if page.tags and page.tags != empty %}
+  <footer class="tag-row brief-tags">
+    {% for tag in page.tags %}<span class="chip chip-tag">#{{ tag }}</span>{% endfor %}
+  </footer>
+  {% endif %}
+
+  <aside class="brief-disclaimer">
+    <strong>&#9888; AI-Generated Assessment</strong> &mdash; produced by the CyberPent HUMINT
+    Intelligence Fabric. All hypotheses include supporting and contradictory evidence chains.
+    Verify conclusions through analyst review before operational use.
+  </aside>
+
+  <nav class="brief-nav">
+    <a class="nav-back" href="{{ '/humint/' | relative_url }}">[ cd ../humint ]</a>
+  </nav>
+</article>
+
+<script>
+(function () {
+  var fill = document.getElementById('read-fill');
+  function update() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    fill.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 100) + '%';
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+</script>

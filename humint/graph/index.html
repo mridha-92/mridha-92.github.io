@@ -1,0 +1,76 @@
+---
+layout: humint_default
+title: "Knowledge Graph — CyberPent HUMINT"
+description: "Interactive knowledge graph visualization of threat entities and relationships."
+---
+
+<section class="section">
+  <div class="section-head">
+    <span class="tag">GRAPH</span>
+    <h2>Knowledge Graph</h2>
+  </div>
+
+  <div class="graph-container" id="knowledge-graph">
+    <canvas id="graph-canvas"></canvas>
+    <div class="graph-controls">
+      <button onclick="graphZoom(1.2)">+</button>
+      <button onclick="graphZoom(0.8)">&minus;</button>
+      <button onclick="graphReset()">Reset</button>
+    </div>
+  </div>
+
+  <div class="humint-panel" style="margin-top:1.5rem">
+    <p class="panel-label">GRAPH LEGEND</p>
+    <div class="chips">
+      <span class="chip" style="border-color:#00e5ff;color:#00e5ff">Person</span>
+      <span class="chip" style="border-color:#a855f7;color:#a855f7">Organization</span>
+      <span class="chip" style="border-color:#ff2d78;color:#ff2d78">Alias</span>
+      <span class="chip" style="border-color:#00ff88;color:#00ff88">Account</span>
+      <span class="chip" style="border-color:#ffb800;color:#ffb800">Domain</span>
+      <span class="chip" style="border-color:#ff6b35;color:#ff6b35">IP</span>
+      <span class="chip" style="border-color:#ff3333;color:#ff3333">ThreatActor</span>
+      <span class="chip" style="border-color:#e040fb;color:#e040fb">Campaign</span>
+    </div>
+  </div>
+</section>
+
+<script src="{{ '/assets/js/humint_viz.js' | relative_url }}"></script>
+<script>
+(function () {
+  fetch('{{ "/humint/api/graph.json" | relative_url }}')
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      window._graphInstance = new CyberPentGraph('graph-canvas', data);
+    })
+    .catch(function () {
+      // Demo data if API not available
+      var demo = {
+        nodes: [
+          { id: 'n1', label: 'AlphaWolf', type: 'ThreatActor', size: 12 },
+          { id: 'n2', label: 'evil-corp.io', type: 'Domain', size: 8 },
+          { id: 'n3', label: '192.168.1.100', type: 'IP', size: 7 },
+          { id: 'n4', label: '@alpha_wolf', type: 'Alias', size: 9 },
+          { id: 'n5', label: 'protonmail.com', type: 'Domain', size: 6 },
+          { id: 'n6', label: 'Finance Sector', type: 'Organization', size: 10 },
+        ],
+        edges: [
+          { source: 'n1', target: 'n4', type: 'USES' },
+          { source: 'n1', target: 'n2', type: 'ATTRIBUTED_TO' },
+          { source: 'n2', target: 'n3', type: 'RESOLVES_TO' },
+          { source: 'n1', target: 'n5', type: 'COMMUNICATES_WITH' },
+          { source: 'n1', target: 'n6', type: 'TARGETS' },
+        ]
+      };
+      window._graphInstance = new CyberPentGraph('graph-canvas', demo);
+    });
+})();
+
+function graphZoom(factor) {
+  // Placeholder for zoom control
+}
+
+function graphReset() {
+  var canvas = document.getElementById('graph-canvas');
+  if (canvas) canvas.parentElement.reload && canvas.parentElement.reload();
+}
+</script>

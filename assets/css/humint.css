@@ -1,0 +1,402 @@
+/* ============================================================
+   CyberPent HUMINT — Intelligence Visualization Styles
+   Extends radar.css design system
+   ============================================================ */
+
+:root {
+  --humint-cyan: #00e5ff;
+  --humint-pink: #ff2d78;
+  --humint-green: #00ff88;
+  --humint-amber: #ffb800;
+  --humint-red: #ff3333;
+  --humint-purple: #a855f7;
+  --humint-bg: #0a0e17;
+  --humint-card: #111827;
+  --humint-border: #1e293b;
+  --humint-text: #e2e8f0;
+  --humint-muted: #64748b;
+}
+
+/* HUMINT Panel */
+.humint-panel {
+  background: var(--humint-card);
+  border: 1px solid var(--humint-border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Hypothesis Cards */
+.hypothesis-card {
+  background: rgba(0, 229, 255, 0.03);
+  border: 1px solid var(--humint-border);
+  border-left: 3px solid var(--humint-cyan);
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.hyp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.hyp-id {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--humint-cyan);
+  font-weight: 700;
+}
+
+.hyp-statement {
+  font-size: 0.95rem;
+  color: var(--humint-text);
+  margin: 0.5rem 0;
+  line-height: 1.5;
+}
+
+.hyp-confidence {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.75rem 0;
+}
+
+.hyp-evidence {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--humint-border);
+}
+
+.hyp-contradictions {
+  border-top-color: rgba(255, 51, 51, 0.3);
+}
+
+.evidence-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--humint-muted);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.chip-evidence {
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  color: var(--humint-green);
+}
+
+.chip-contradiction {
+  background: rgba(255, 51, 51, 0.1);
+  border: 1px solid rgba(255, 51, 51, 0.3);
+  color: var(--humint-red);
+}
+
+.hyp-status-confirmed { background: rgba(0, 255, 136, 0.15); color: var(--humint-green); }
+.hyp-status-contested { background: rgba(255, 184, 0, 0.15); color: var(--humint-amber); }
+.hyp-status-rejected { background: rgba(255, 51, 51, 0.15); color: var(--humint-red); }
+.hyp-status-pending, .hyp-status-draft { background: rgba(100, 116, 139, 0.15); color: var(--humint-muted); }
+
+/* Entity Grid */
+.entity-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.entity-card {
+  background: rgba(168, 85, 247, 0.05);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 6px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.entity-type {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--humint-purple);
+}
+
+.entity-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--humint-text);
+}
+
+.entity-aliases {
+  font-size: 0.75rem;
+  color: var(--humint-muted);
+}
+
+/* Knowledge Graph Canvas */
+.graph-container {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  background: var(--humint-bg);
+  border: 1px solid var(--humint-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.graph-container canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.graph-controls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.graph-controls button {
+  background: var(--humint-card);
+  border: 1px solid var(--humint-border);
+  color: var(--humint-text);
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+}
+
+.graph-controls button:hover {
+  border-color: var(--humint-cyan);
+  color: var(--humint-cyan);
+}
+
+/* Timeline */
+.timeline-container {
+  position: relative;
+  padding: 2rem 0;
+}
+
+.timeline-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--humint-cyan), var(--humint-pink));
+  transform: translateX(-50%);
+}
+
+.timeline-event {
+  position: relative;
+  width: 45%;
+  padding: 1rem;
+  background: var(--humint-card);
+  border: 1px solid var(--humint-border);
+  border-radius: 6px;
+  margin-bottom: 2rem;
+}
+
+.timeline-event:nth-child(odd) {
+  margin-left: 5%;
+}
+
+.timeline-event:nth-child(even) {
+  margin-left: 50%;
+}
+
+.timeline-event::before {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: var(--humint-cyan);
+  border-radius: 50%;
+  top: 1.2rem;
+  border: 2px solid var(--humint-bg);
+}
+
+.timeline-event:nth-child(odd)::before {
+  right: -7%;
+}
+
+.timeline-event:nth-child(even)::before {
+  left: -7%;
+}
+
+.timeline-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--humint-cyan);
+  margin-bottom: 0.25rem;
+}
+
+.timeline-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--humint-text);
+  margin-bottom: 0.25rem;
+}
+
+.timeline-detail {
+  font-size: 0.8rem;
+  color: var(--humint-muted);
+}
+
+/* Intelligence Summary Cards */
+.intel-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.intel-stat {
+  background: var(--humint-card);
+  border: 1px solid var(--humint-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.intel-stat .stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--humint-cyan);
+  display: block;
+}
+
+.intel-stat .stat-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--humint-muted);
+  margin-top: 0.25rem;
+}
+
+/* Pipeline Visualization */
+.pipeline-viz {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 1.5rem;
+  background: var(--humint-card);
+  border: 1px solid var(--humint-border);
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+
+.pipeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 100px;
+  text-align: center;
+}
+
+.pipeline-step .step-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  border: 2px solid var(--humint-border);
+  background: var(--humint-bg);
+}
+
+.pipeline-step.active .step-icon {
+  border-color: var(--humint-cyan);
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--humint-cyan);
+}
+
+.pipeline-step .step-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  color: var(--humint-muted);
+}
+
+.pipeline-arrow {
+  color: var(--humint-border);
+  font-size: 1.2rem;
+  min-width: 30px;
+  text-align: center;
+}
+
+/* Confidence Dimensions */
+.conf-dimensions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.conf-dim {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.conf-dim .dim-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--humint-muted);
+  min-width: 120px;
+}
+
+.conf-dim .dim-bar {
+  flex: 1;
+  height: 4px;
+  background: var(--humint-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.conf-dim .dim-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* Colab Link */
+.colab-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 184, 0, 0.1);
+  border: 1px solid rgba(255, 184, 0, 0.3);
+  border-radius: 6px;
+  color: var(--humint-amber);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.colab-link:hover {
+  background: rgba(255, 184, 0, 0.2);
+  border-color: var(--humint-amber);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .entity-grid { grid-template-columns: 1fr; }
+  .conf-dimensions { grid-template-columns: 1fr; }
+  .timeline-event { width: 85%; margin-left: 10% !important; }
+  .timeline-line { left: 5%; }
+  .timeline-event::before { left: -8% !important; right: auto !important; }
+}

@@ -38,6 +38,10 @@ defaults:
       path: "radar"
     values:
       layout: radar_default
+  - scope:
+      path: "humint"
+    values:
+      layout: humint_default
 
 # Never ship operational files to the live site
 exclude:
