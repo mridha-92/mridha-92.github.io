@@ -278,6 +278,15 @@
       .app-shell { grid-template-columns: 1fr; }
       .feed { order: -1; }
       .feed-list { max-height: 300px; }
+      .topbar { flex-wrap: wrap; }
+      .engine-trio { order: 5; flex-basis: 100%; justify-content: flex-start; overflow-x: auto; }
+    }
+    @media (max-width: 640px) {
+      .campaign-trigger .campaign-name { max-width: 150px; }
+      .campaign-dropdown { width: min(300px, calc(100vw - 32px)); }
+      .notif-panel { width: min(360px, calc(100vw - 28px)); }
+      .engine-bar { width: 46px; }
+      .m-grid { grid-template-columns: repeat(auto-fill, minmax(min(230px, 100%), 1fr)); }
     }
   </style>
 </head>
