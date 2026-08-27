@@ -16,3 +16,6 @@ __pycache__/
 # OS noise
 .DS_Store
 Thumbs.db
+
+# Local voice agent frontend (kept out of the live site)
+voice-agent/
