@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice AI Agent</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="status-badge" id="statusBadge">Disconnected</div>
+            <h1>AI Voice Agent</h1>
+        </header>
+
+        <div class="config-drawer">
+            <input type="text" id="serverUrlInput" placeholder="wss://[...].trycloudflare.com/ws/chat">
+            <button id="connectBtn">Connect</button>
+        </div>
+
+        <div class="transcript-log" id="transcriptLog">
+            <div class="message system">Connect to the backend to start talking.</div>
+        </div>
+
+        <div class="controls">
+            <button id="micBtn" class="mic-btn" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="22"></line>
+                </svg>
+            </button>
+            <div class="visualizer" id="visualizer"></div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
