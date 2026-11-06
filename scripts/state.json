@@ -476,6 +476,7 @@
   "https://news.google.com/rss/articles/CBMingFBVV95cUxOYlpkOExtV3REMTU2cXpvNmI4NlcwQnBSUkJJVkt1eE91QXFkbEt6b3YtRW5HRDVGRUJxNEk3S1RDTllsRC1HNzlycXFDbTdraFBreVZNQU0wRVZtTDhtZ3pNa1RxMko4R1VEQUhjS2tMOFdXQ3dWei1DVWdwVzVBSlQ0VlZWd2hETFl1d185M2JPNW9OS0V3VkoxaHRoUQ?oc=5",
   "https://news.google.com/rss/articles/CBMingFBVV95cUxPRWt5VzJWZklqNExURTFmYjZNMHFiOEM3YU55LXN2VW1zT2NqRUJmX2NnWVZFVXROR3kwUzNNVGc2eER2dzVIWDI0S20zVHpwLUFFVTVNd0JScExLZnNLbDFvUjlWck5vT0hTVHQ5dTgzZWl6Q1l3bVl0TU9FcUFGeEpfTXd2MmlBRElEOVVoTkJaMlgwT0tPX3kzLUxUUQ?oc=5",
   "https://news.google.com/rss/articles/CBMingFBVV95cUxPZkdHQnkzc2d2VG1wLXpfZEhfMVFOUjFBTVhNRDBxdjNUNVlMbi1tMncwOS0tbDNzMGtjNnlJN05JWkZlWExTdjdwT3lDeHNYeDNiWm1OZWJ1V1BUWlhoenBEV1oyc3dpbE5tbU5LcjF1dzJYc2YzcC11b0xNSS1sRHBpclJOVy1LSWlfX3ZpSUxDUWpIR25nXy1BWnpZUQ?oc=5",
+  "https://news.google.com/rss/articles/CBMingFBVV95cUxPcDJPTURSNGtfUlJRZTBWNHl1ekMwYnlsV20xTEdEc0N2Q1dCN3JjYXhWM1IzSFNuLVo1c2FnN3VJc2NyMDVHTkdqQWJ5VWtscVNiTUxYNm1sY3R0U0QtVklfMUI5OXdKTTZyOHh2MFVncTFEdUVubEdWN3J5dkRLcndqY0ZwT1VHV3lfOWhla1Fjam8yXzRQSjY3N18zdw?oc=5",
   "https://news.google.com/rss/articles/CBMingFBVV95cUxQOExBNG8tNWg1VGJLbUtIa05nMFVGOUtTRkpxc2VIcW95WmZ3cElCd2pxSDR0OFNGal8zNXRVQ0FyQWdUNThiNkJUOUFIekc1WEhabGd5R3V3ZU9VM3FiYjkzUW9FeklyQzIwcTJSR2w3Z19qTjdyWjlYZDlxXzVhbVVEZzEzdnM2dGhLM1hyalJXaGtPVERCSjFHcUJ0UQ?oc=5",
   "https://news.google.com/rss/articles/CBMingFBVV95cUxQRmpVYlc4emoyQjVnMUV4eXVrWVFuTG45TDhsVmJWalZnSGhoR29BS0RkY3NqY3IzNE8xRFBvckZnaGpBYlRjdVltUWluRjFMQUd5UUVjdVh5c0pqNWEyRmFibjFHbGFwZmw5aVBrUUIxOUkyTE9CQ1l1R1p6bGg3TFpXRl9CQy1MbGlqcU1yZ2o2S1RwWUNDeW1Tak5NQQ?oc=5",
   "https://news.google.com/rss/articles/CBMingFBVV95cUxQZkJKa0VUSHo2Vl9ablhnc3ZNd2tpZ21UcUI1cnVaeng5dDRld19CbV9YOGRjd183dWt6T1ZQYVNkSURFS2o1V2pYRkU2SzVyX2V0Si1WX0cyVkxfV3BtRVpwVDZuUTZUWVF4ZzEzWTdHQ3ZUNFlzeUFoanc4UVltLXpOcXlKLXUyZkwzdEFwVG9na2VSV2RiSnEySGNXZw?oc=5",
@@ -1166,6 +1167,7 @@
   "https://www.reddit.com/r/cybersecurity/comments/1xo43qc/under_attack_services_has_anyone_ever_used_them",
   "https://www.reddit.com/r/cybersecurity/comments/1xocsyq/what_does_weaponized_mean_in_this_report",
   "https://www.reddit.com/r/cybersecurity/comments/1xoo0nf/hackers_backdoor_linux_servers_using_trojanized",
+  "https://www.reddit.com/r/cybersecurity/comments/1xpcc5y/is_it_worth",
   "https://www.securityweek.com/12-year-old-postgresql-vulnerability-enables-database-server-takeover",
   "https://www.securityweek.com/91-vulnerabilities-patched-in-spring-application-framework",
   "https://www.securityweek.com/ai-agents-can-retrain-own-models-mid-task-leaking-secrets-and-erasing-refusals",
@@ -1196,6 +1198,7 @@
   "https://www.securityweek.com/new-shieldcrash-zero-day-exploit-targets-microsoft-defender",
   "https://www.securityweek.com/northstar-security-exits-stealth-with-7m-to-expose-toxic-risk-combinations",
   "https://www.securityweek.com/openai-investigates-report-linking-ai-agents-to-rubygems-attack",
+  "https://www.securityweek.com/openai-says-new-gpt-6-cyber-model-hunts-flaws-without-crossing-the-line",
   "https://www.securityweek.com/oracle-patches-800-vulnerabilities-in-september-2026-security-update",
   "https://www.securityweek.com/papercut-flaws-exploited-in-ai-powered-attacks",
   "https://www.securityweek.com/personal-information-exposed-in-apollo-global-data-breach",
@@ -1209,5 +1212,6 @@
   "https://www.securityweek.com/tp-link-faces-state-lawsuits-and-new-scrutiny-over-isp-router-flaws",
   "https://www.securityweek.com/trezor-says-347000-users-received-phishing-emails-after-brevo-hack",
   "https://www.securityweek.com/uk-legal-aid-agency-hack-scope-widens-after-forensic-review",
+  "https://www.securityweek.com/us-agencies-urge-organizations-to-harden-refrigeration-controllers",
   "https://www.securityweek.com/watchguard-patches-critical-vulnerabilities"
 ]
